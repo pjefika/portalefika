@@ -7,7 +7,7 @@ var data = {
     abas: [
         {
             titulo: 'String',
-            subAbas: [{"titulo":'oi'}, {"titulo":'tchau'}]
+            subAbas: [{"titulo":'oi', conteudo:{id:3}}, {"titulo":'tchau', conteudo:{id:3}}]
         }
     ]};
 
@@ -23,13 +23,20 @@ var leabas = {
                 </a>\n\
                 <ul class="dropdown-menu">\n\
                     <li v-for="sub in subAbas">\n\
-                            <a href="#">{{sub.titulo}}</a>\n\
+                            <a v-bind:idzin="sub.conteudo.id" href="#" class="subabadinam">{{sub.titulo}}</a>\n\
                     </li>\n\
                 </ul></li>',
     data: function () {
         return data;
     }
 }
+$(document).ready(function(){
+    $(".subabadinam").click(function(){
+        var leId = $(this).attr('idzin');
+        window.location.replace("/comunicacao/conteudo/list/"+leId);
+    });    
+})
+
 new Vue({
     el: "#menu-dinam",
     components: {'leabas': leabas},
@@ -43,8 +50,6 @@ new Vue({
             var self = this;
             $.get(abaURL, function(data) {
                 self.abas = data.list;
-                console.log(data.list);
-                console.log(self.abas);
             })
         }
     }
