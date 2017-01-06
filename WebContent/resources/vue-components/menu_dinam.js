@@ -1,7 +1,7 @@
 // URL - REST Controllers
 
-var abaURL = "/comunicacao/aba/listAtivos";
-
+var abaAtivosURL = "/comunicacao/aba/listAtivos/";
+var leLink = "/comunicacao/conteudo/list/";
 
 var data = {
     abas: [
@@ -33,7 +33,7 @@ var leabas = {
 $(document).ready(function(){
     $(".subabadinam").click(function(){
         var leId = $(this).attr('idzin');
-        window.location.replace("/comunicacao/conteudo/list/"+leId);
+        window.location.replace(leLink+leId);
     });    
 })
 
@@ -48,7 +48,7 @@ new Vue({
     methods: {
         getMenu: function () {
             var self = this;
-            $.get(abaURL, function(data) {
+            $.get(abaAtivosURL, function(data) {
                 self.abas = data.list;
             })
         }

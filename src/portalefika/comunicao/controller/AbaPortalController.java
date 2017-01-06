@@ -50,19 +50,8 @@ public class AbaPortalController extends AbstractController {
     }
 
     @Get
-    @Path("/comunicacao/aba/listAtivos")
+    @Path("/comunicacao/aba/")
     public void lista() {
-
-        List<ComponentePortal> l = abaDao.listarAtivos(new AbaPortal());
-
-        if (l != null) {
-            includeSerializer(l);
-        }
-    }
-
-    @Get
-    @Path("/comunicacao/aba/list")
-    public void list() {
 
         List<Component> l = abaDao.listar(new AbaPortal());
 
@@ -71,6 +60,18 @@ public class AbaPortalController extends AbstractController {
         }
     }
 
+    @Get
+    @Path("/comunicacao/aba/listAtivos/")
+    public void listAtivos() {
+
+        List<ComponentePortal> l = abaDao.listarAtivos(new AbaPortal());
+
+        if (l != null) {
+            includeSerializer(l);
+        }
+    }
+    
+    
     @Consumes("application/json")
     @Path("/comunicacao/aba/delete")
     @Post
