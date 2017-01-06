@@ -13,6 +13,7 @@ import portalefika.comunicao.dal.AbaPortalDAO;
 import portalefika.comunicao.dal.exception.PersistenciaException;
 import portalefika.comunicao.entidades.AbaPortal;
 import portalefika.comunicao.entidades.Component;
+import portalefika.comunicao.entidades.ComponentePortal;
 import portalefika.controller.AbstractController;
 
 @Controller
@@ -49,8 +50,19 @@ public class AbaPortalController extends AbstractController {
     }
 
     @Get
-    @Path("/comunicacao/aba/")
+    @Path("/comunicacao/aba/listAtivos")
     public void lista() {
+
+        List<ComponentePortal> l = abaDao.listarAtivos(new AbaPortal());
+
+        if (l != null) {
+            includeSerializer(l);
+        }
+    }
+
+    @Get
+    @Path("/comunicacao/aba/list")
+    public void list() {
 
         List<Component> l = abaDao.listar(new AbaPortal());
 

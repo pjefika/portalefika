@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 import portalefika.comunicao.dal.exception.PersistenciaException;
 import portalefika.comunicao.entidades.Component;
+import portalefika.comunicao.entidades.ComponentePortal;
 
 @Stateless
 public class ComponentePortalDAO {
@@ -52,6 +53,14 @@ public class ComponentePortalDAO {
             return (List<Component>) this.entityManager.createQuery("SELECT a FROM " + a.getClass().getSimpleName() + " a ORDER BY id ASC", a.getClass()).getResultList();
         } catch (Exception e) {
             return new ArrayList<Component>();
+        }
+    }
+
+    public List<ComponentePortal> listarAtivos(ComponentePortal a) {
+        try {
+            return (List<ComponentePortal>) this.entityManager.createQuery("SELECT a FROM " + a.getClass().getSimpleName() + " a WHERE a.ativo=true ORDER BY id ASC", a.getClass()).getResultList();
+        } catch (Exception e) {
+            return new ArrayList<ComponentePortal>();
         }
     }
 

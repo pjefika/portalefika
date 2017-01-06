@@ -59,7 +59,7 @@
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
-                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <div class="collapse navbar-collapse" id="menu-dinam" v-cloak>
                         <ul class="nav navbar-nav">
                             <li><a href="${linkTo[HomeController].index()}">Home <span class="sr-only">(current)</span></a></li>
                             <li><a href="${linkTo[SimuladorController].index()}">Simulador PIV</a></li>
@@ -81,7 +81,9 @@
                                     <li><a href="#">One more separated link</a></li>
                                 </ul>
                             </li>
-                        </ul>
+                        
+                            <leabas v-for="aba in abas" v-bind:titulo="aba.titulo" v-bind:sub-abas="aba.subAbas"></leabas>
+                       </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span>Perfil <span class="caret"></span></a>
@@ -134,3 +136,4 @@
         <script src="${pageContext.request.contextPath}/resources/vue-components/notificationTemplate.js"></script>        
     </body>
 </html>
+<script src="${pageContext.request.contextPath}/resources/vue-components/menu_dinam.js"></script>
