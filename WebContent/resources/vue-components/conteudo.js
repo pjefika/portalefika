@@ -7,11 +7,7 @@
 var conteudoURL = "/comunicacao/conteudo/";
 var conteudoCategoriaURL = "/comunicacao/conteudocategoria/";
 
-new Vue({
-
-    el: '#conteudo',
-    data: {
-
+var data = {
         conteudos: null,
         categorias: null,
         categoriaselec: null,
@@ -57,6 +53,51 @@ new Vue({
             }
         },
         delconteudo: null
+    };
+    
+var leTr = {
+    props: {
+      conteudo: Object
+      },
+     computed:{
+        dataCriacaodateFormat: function (h) {
+            return  moment(this.conteudo.dataCriacao).format('DD/MM/YYYY');
+        }
+    },
+    methods: {
+        updateModfConteudo: function(h)  {
+            this.$parent.updateModConteudo(h);
+        },
+        updateDelfConteudo: function (h) {
+           this.$parent.updateDelConteudo(h);
+        }
+    },
+    data: function () {
+        return data;
+    },
+    template: ' <tr>\n\
+                    <td>{{conteudo.titulo}}</td>\n\
+                    <td>\n\
+                        <label v-if="conteudo.ativo == true" >Ativo</label>\n\
+                        <label v-else >Inativo</label>\n\
+                    </td>\n\
+                    <td>{{dataCriacaodateFormat}}</td>\n\
+                    <td>{{conteudo.categoria.titulo}}</td>\n\
+                   <td>\n\
+                        <img :src="conteudo.imagem.base64" style="width: 50px"/>\n\
+                    </td>\n\
+                    <td>\n\
+                        <button type="button" class="btn btn-primary glyphicon glyphicon-edit btn-sm" v-on:click="updateModfConteudo(conteudo)" data-toggle="modal" data-target="#modConteudo"></button>\n\
+                        <button type="button" class="btn btn-danger glyphicon glyphicon-trash btn-sm" v-on:click="updateDelfConteudo(conteudo)" data-toggle="modal" data-target="#delConteudo"></button>                            \n\
+                    </td>\n\
+                </tr>'
+}
+
+new Vue({
+    el: '#contenido',
+    data: data,
+    components:{
+        'letr': leTr
     },
     created: function () {
         this.getconteudo();
@@ -131,6 +172,7 @@ new Vue({
             var self = this;
             self.modconteudo.conteudo = h;
             self.image = self.modconteudo.conteudo.imagem.base64;
+            console.log(self.modconteudo);
         },
         updateDelConteudo: function (h) {
             var self = this;
@@ -234,4 +276,11 @@ new Vue({
             self.categoriaselec = null;
         }
     }
-});
+})
+Vue.config.errorHandler = function (err, vm) {
+    setTimeout(function(){
+        console.log(err);
+        console.log(vm);      
+    },2000)
+  
+}

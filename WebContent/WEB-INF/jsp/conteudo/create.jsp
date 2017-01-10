@@ -14,8 +14,8 @@
         <h1>Conteúdo</h1>
     </div>
 
-    <div id="conteudo" v-cloak>
-
+    <div id="contenido" v-cloak>
+            
         <div>
             <table class="table table-bordered">                    
                 <thead>                        
@@ -28,23 +28,8 @@
                         <th>Ações</th>                        
                     </tr>                        
                 </thead>                    
-                <tbody>                        
-                    <tr v-for="conteudo in conteudos" :key="conteudo.id">                            
-                        <td>{{conteudo.titulo}}</td>
-                        <td>
-                            <label v-if="conteudo.ativo == true" >Ativo</label>
-                            <label v-if="conteudo.ativo == false" >Inativo</label>
-                        </td>
-                        <td>{{dateFormat(conteudo.dataCriacao)}}</td>
-                        <td>{{conteudo.categoria.titulo}}</td>
-                        <td>
-                            <img :src="conteudo.imagem.base64" style="width: 50px"/>                            
-                        </td>
-                        <td>                            
-                            <button type="button" class="btn btn-primary glyphicon glyphicon-edit btn-sm" @click="updateModConteudo(conteudo)" data-toggle="modal" data-target="#modConteudo"></button>
-                            <button type="button" class="btn btn-danger glyphicon glyphicon-trash btn-sm" @click="updateDelConteudo(conteudo)" data-toggle="modal" data-target="#delConteudo"></button>                            
-                        </td>
-                    </tr>                        
+                <tbody>                                                    
+                    <tr is="letr" v-for="conteudo in conteudos" :key="conteudo.id" v-bind:conteudo="conteudo"></tr>
                 </tbody>                    
             </table>
             <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#criaConteudo" data-backdrop="static" @click="resetObjects()">Criar Conteudo</button>
@@ -114,7 +99,7 @@
                     <div class="modal-body">
 
                         <div class="form-group">
-                            <label >Titulo</label>
+                            <label>Titulo</label>
                             <input type="text" class="form-control" placeholder="Titulo" v-model="modconteudo.conteudo.titulo">
                         </div>
                         <div class="form-group">
