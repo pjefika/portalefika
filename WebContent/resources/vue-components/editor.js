@@ -193,9 +193,14 @@ var dev = new Vue({
                     "ativo": false,
                     "abaPortal": self.activedAba,
                     "conteudo": {
-                        id: 7
-                    }
-                }};
+                         "titulo": "Novo Conteudo",
+                         "ativo": false,
+                         "dataCriacao": new Date(),
+                         "categoria": {
+                             "titulo": "Nova Categoria",
+                             "ativo": false
+                         }
+                     }}};
 
             self.adicionarSubAba(_novaSubAba);
         },

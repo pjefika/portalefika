@@ -23,7 +23,7 @@ public class ComponentePortalDAO {
     @Transactional
     public void cadastrar(Component c) throws PersistenciaException {
         try {
-            this.entityManager.merge(c);
+            this.entityManager.persist(c);
         } catch (Exception e) {
             throw new PersistenciaException(e.getMessage());
             //throw new PersistenciaException("Falha ao cadastrar " + c.getClass().getSimpleName() + ".");

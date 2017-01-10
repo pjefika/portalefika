@@ -30,12 +30,6 @@ var leabas = {
         return data;
     }
 }
-//$(document).ready(function(){
-//    $(".subabadinam").click(function(){
-//        var leId = $(this).attr('idzin');
-//        window.location.replace(leLink+leId);
-//    });    
-//})
 
 new Vue({
     el: "#menu-dinam",

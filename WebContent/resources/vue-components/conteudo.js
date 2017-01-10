@@ -84,7 +84,7 @@ var leTr = {
                     <td>{{dataCriacaodateFormat}}</td>\n\
                     <td>{{conteudo.categoria.titulo}}</td>\n\
                    <td>\n\
-                        <img :src="conteudo.imagem.base64" style="width: 50px"/>\n\
+                        <img v-if="conteudo.imagem != null" :src="conteudo.imagem.base64" style="width: 50px"/>\n\
                     </td>\n\
                     <td>\n\
                         <button type="button" class="btn btn-primary glyphicon glyphicon-edit btn-sm" v-on:click="updateModfConteudo(conteudo)" data-toggle="modal" data-target="#modConteudo"></button>\n\
