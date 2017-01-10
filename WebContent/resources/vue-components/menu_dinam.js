@@ -23,19 +23,19 @@ var leabas = {
                 </a>\n\
                 <ul class="dropdown-menu">\n\
                     <li v-for="sub in subAbas">\n\
-                            <a v-bind:idzin="sub.conteudo.id" href="#" class="subabadinam">{{sub.titulo}}</a>\n\
+                            <a v-bind:idzin="sub.conteudo.id" :href="\''+leLink+'\'+sub.conteudo.id" class="subabadinam">{{sub.titulo}}</a>\n\
                     </li>\n\
                 </ul></li>',
     data: function () {
         return data;
     }
 }
-$(document).ready(function(){
-    $(".subabadinam").click(function(){
-        var leId = $(this).attr('idzin');
-        window.location.replace(leLink+leId);
-    });    
-})
+//$(document).ready(function(){
+//    $(".subabadinam").click(function(){
+//        var leId = $(this).attr('idzin');
+//        window.location.replace(leLink+leId);
+//    });    
+//})
 
 new Vue({
     el: "#menu-dinam",

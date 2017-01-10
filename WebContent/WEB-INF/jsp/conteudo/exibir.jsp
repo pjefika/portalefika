@@ -39,7 +39,7 @@
                         <img :src="conteudo.imagem.base64" style="width: 50px"/>
                     </td>
                     <td>
-                        <a class="btn btn-success glyphicon glyphicon-list btn-sm" role="button" :href="'http://localhost:8080/comunicacao/conteudo/list/' + conteudo.id"/>                       
+                        <a class="btn btn-success glyphicon glyphicon-list btn-sm" role="button" :href="'${pageContext.request.contextPath}/comunicacao/conteudo/list/' + conteudo.id"/>                       
                     </td>
                 </tr>                        
             </tbody>                    

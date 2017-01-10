@@ -188,14 +188,14 @@ var dev = new Vue({
         // SubAba
         novaSubAba: function() {
             var self = this;
+            
             var _novaSubAba = {"subAbaPortal": {"titulo": "Nova SubAba",
                     "ativo": false,
                     "abaPortal": self.activedAba,
                     "conteudo": {
-                        "titulo": "Novo Conteudo",
-                        "ativo": false,
-                        "dataCriacao": new Date()
-                    }}};
+                        id: 7
+                    }
+                }};
 
             self.adicionarSubAba(_novaSubAba);
         },
