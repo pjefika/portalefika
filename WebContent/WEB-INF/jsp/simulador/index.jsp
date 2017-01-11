@@ -15,7 +15,7 @@
                 <div v-show="show">
                     <component v-bind:is="currentViewForm"></component>
                     <hr>
-                    <simulador-form v-bind:target="vm.piv.target"></simulador-form>
+                    <simulador-form v-bind:piv="vm.piv"></simulador-form>
                 </div>
                 <div v-show="!show">
                     <p> </p>
@@ -49,8 +49,8 @@
         <hr>
 
         <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
-
         <button type="button" class="btn btn-default btn-xs" @click="loadIndicadores()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Carregar Indicadores</button>
+        <button type="button" class="btn btn-primary btn-xs" @click="getMeta()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>
 
     </div>
 
@@ -121,7 +121,7 @@
             <div class="form-group">
                 <label for="tma">Faltas</label>
                 <div class="input-group">
-                    <input v-model="vm.faltas" id="faltas" type="number" class="form-control" @change="getTarget()" aria-describedby="tma-addon1">
+                    <input v-model="vm.faltas" id="faltas" type="number" class="form-control" @change="getTarget()">
                     <span class="input-group-addon"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></span>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 
 
-/* global _, moment */
+/* global _, moment, obj, Vue */
 
 var pivURL = "http://localhost:8080/pivAPI/operador/simulador/";
 var pivURL2 = "http://localhost:8080/pivAPI/operador/simulador/change/";
@@ -14,11 +14,12 @@ var data =
             currentViewForm: 'dados-form',
             show: false,
             vm: {
-                fcr: 0,
-                tma: 0,
-                monitoria: 0,
-                adr: 0,
                 piv: {
+                    fcr: 0,
+                    tma: 0,
+                    monitoria: 0,
+                    adr: 0,
+                    faltas: 0,
                     op: {equipe: ""},
                     "indicadores": {},
                     "pontos": 0.0,
@@ -27,19 +28,50 @@ var data =
             }
         }
 
-var MensagemPiv = {
-    template: '<div class="alert alert-warning" role="alert">{{texto}}</div>',
-    props: {
-        texto: {
-            type: String,
-            default: function() {
-                return ""
-            }
-        }
-    }
-}
 
-var SimuladorForm = {
+
+Vue.component('simulador-form', {
+    props: {
+        piv: Object
+    },
+    template: '<indicadores-form v-bind:target="piv.target"></indicadores-form>',
+    methods: {
+        getTarget:
+                _.debounce(function() {
+
+                    vm.$emit('test', 'hi');
+
+                    var self = this;
+                    var simulator =
+                            {"s": {
+                                    "fcr": {realizado: (self.piv.fcr / 100)},
+                                    "adr": {realizado: (self.piv.adr / 100)},
+                                    "tma": {realizado: moment.duration(self.piv.tma, "HH:mm:ss").asSeconds()},
+                                    "monitoria": {realizado: (self.piv.monitoria / 100)},
+                                    "faltas": self.piv.faltas,
+                                    op: self.piv.op}
+                            };
+
+                    $.ajax({
+                        type: "POST",
+                        data: JSON.stringify(simulator),
+                        url: pivURL2,
+                        dataType: "json",
+                        beforeSend: function(xhr) {
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                        },
+                        error: function() {
+                            self.currentViewForm = 'indisponivel-form';
+                        },
+                        success: function(data) {
+                            this.piv = data.calculoPivFacade;
+                        }
+                    });
+                }, 1000)
+    }
+})
+
+Vue.component('indicadores-form', {
     props: {
         target: {
             type: Number,
@@ -59,6 +91,7 @@ var SimuladorForm = {
     methods: {
         getTarget:
                 _.debounce(function() {
+
                     var self = this;
                     var simulator =
                             {"s": {
@@ -66,8 +99,11 @@ var SimuladorForm = {
                                     "adr": {realizado: (self.vm.adr / 100)},
                                     "tma": {realizado: moment.duration(self.vm.tma, "HH:mm:ss").asSeconds()},
                                     "monitoria": {realizado: (self.vm.monitoria / 100)},
+                                    "faltas": self.vm.faltas,
                                     op: self.vm.piv.op}
                             };
+
+                    console.log(simulator)
 
                     $.ajax({
                         type: "POST",
@@ -89,55 +125,47 @@ var SimuladorForm = {
     data: function() {
         return data
     }
-}
+})
 
-var FormCelula = {
+
+
+Vue.component('celula-form', {
     template: '#celula-form',
     data: function() {
         return data
     },
     methods: {
         getTarget: function() {
-            instance.notifier();
+            vm.notifier();
         }
     }
-}
-
-var FormIndisponivel = {
-    template: '<div>Funcionalidade indisponível no momento.</div>',
-    data: function() {
-        return data
-    }
-}
+})
 
 
-var DadosUsuario = {
+Vue.component('dados-form', {
     template: '#dados-form',
     methods: {
-        loadIndicadores: function() {
-            instance.loadIndicadores();
+        getMeta: function() {
+            _metaPiv = data.vm.piv;
+            for (i = 0; i < _metaPiv.indicadores.length; i++) {
+                _metaPiv.indicadores[i].realizado = _metaPiv.indicadores[i].meta;
+            }
+            vm.setIndicadores(_metaPiv);
         }
-    },
-    components: {
-        'mensagem-piv': MensagemPiv
+
+
     },
     data: function() {
         return data
     }
-}
+})
 
-var instance = new Vue({
+var vm = new Vue({
     el: '#piv',
     data: data,
     created: function() {
         var self = this;
         self.loadSession();
-    },
-    components: {
-        'simulador-form': SimuladorForm,
-        'celula-form': FormCelula,
-        'dados-form': DadosUsuario,
-        'indisponivel-form': FormIndisponivel
     },
     methods: {
         notifier: function() {
@@ -162,7 +190,7 @@ var instance = new Vue({
                 success: function(data) {
                     self.usuario = data.usuario;
                 },
-                complete: function(jqXHR, textStatus) {
+                complete: function() {
                     self.loadIndicadores();
                 }
             });
@@ -180,8 +208,24 @@ var instance = new Vue({
         },
         setIndicadores: function(piv) {
             var self = this;
+
             self.usuario.piv = piv
             self.vm.piv = piv
+
+            // MONITORIA
+            var _monitoria = self.getIndicadorPorNome("MONITORIA").realizado * 100;
+            if (_monitoria) {
+                self.vm.monitoria = _monitoria;
+            }
+
+            // FALTAS
+            var _faltas = piv.op.faltas;
+            if (_faltas) {
+                self.vm.faltas = _faltas;
+            } else {
+                self.vm.faltas = 0;
+            }
+
             // FCR
             var _fcr = self.getIndicadorPorNome("FCR").realizado * 100;
             if (_fcr) {
@@ -212,19 +256,48 @@ var instance = new Vue({
                     if (_piv) {
                         self.setIndicadores(_piv)
                     } else {
-
                         self.currentViewForm = 'celula-form';
                         self.getEquipes();
                         self.vm.tma = moment("1900-01-01 00:00:00").add(100, 'seconds').format("HH:mm:ss");
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
+                error: function() {
                     self.currentViewForm = 'indisponivel-form';
                 },
-                complete: function(jqXHR, textStatus) {
+                complete: function() {
                     self.show = true;
                 }
             });
+        }
+    }
+})
+
+
+// Events
+vm.$on('test', function(msg) {
+    console.log(msg)
+})
+
+
+
+
+
+// INDISPONIVEL FORM
+Vue.component('indisponivel-form', {
+    template: '<div>Funcionalidade indisponível no momento.</div>',
+    data: function() {
+        return data
+    }
+})
+
+Vue.component('mensagem-piv', {
+    template: '<div class="alert alert-warning" role="alert">{{texto}}</div>',
+    props: {
+        texto: {
+            type: String,
+            default: function() {
+                return ""
+            }
         }
     }
 })
