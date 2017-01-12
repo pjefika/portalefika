@@ -69,7 +69,7 @@
     <div class="row" v-show="vm.piv.op.equipe">
 
         <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
-        <botoes-acao></botoes-acao>
+        <botoes-acao v-bind:show="currentViewForm == 'dados-form'"></botoes-acao>
         <hr>
 
         <div class="col-xs-1"></div>
@@ -108,7 +108,7 @@
             <div class="form-group">
                 <label for="tma">TMA</label>
                 <div class="input-group">
-                    <input v-model="vm.tma" id="tma" type="time" class="form-control" @change="getTarget()" aria-describedby="tma-addon1">
+                    <input v-model="vm.tma" id="tma" type="text" class="form-control time" maxlength="8" @change="getTarget()">
                     <span class="input-group-addon" id="basic-tma"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span></span>
                 </div>
             </div>

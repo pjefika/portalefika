@@ -21,14 +21,24 @@ var data =
                     adr: 0,
                     faltas: 0,
                     op: {equipe: ""},
-                    "indicadores": {},
+                    "indicadores": [{"realizado": 0.97, "meta": 0.765, "peso": 0.3, "atingimento": 2.0, "pontos": 0.6, "nome": "FCR", "regua": [{"realizado": 0.635, "atingimento": 0.0}, {"realizado": 0.645, "atingimento": 0.3}, {"realizado": 0.655, "atingimento": 0.35}, {"realizado": 0.665, "atingimento": 0.4}, {"realizado": 0.675, "atingimento": 0.45}, {"realizado": 0.685, "atingimento": 0.5}, {"realizado": 0.695, "atingimento": 0.55}, {"realizado": 0.705, "atingimento": 0.6}, {"realizado": 0.715, "atingimento": 0.65}, {"realizado": 0.725, "atingimento": 0.7}, {"realizado": 0.735, "atingimento": 0.75}, {"realizado": 0.745, "atingimento": 0.8}, {"realizado": 0.755, "atingimento": 0.85}, {"realizado": 0.765, "atingimento": 1.0}, {"realizado": 0.775, "atingimento": 1.05}, {"realizado": 0.785, "atingimento": 1.1}, {"realizado": 0.795, "atingimento": 1.2}, {"realizado": 0.805, "atingimento": 1.25}, {"realizado": 0.815, "atingimento": 1.3}, {"realizado": 0.825, "atingimento": 1.5}, {"realizado": 0.835, "atingimento": 2.0}]}, {"realizado": 343.0, "meta": 360.0, "peso": 0.25, "atingimento": 1.0, "pontos": 0.25, "nome": "TMA", "regua": [{"realizado": 120.0, "atingimento": 0.0}, {"realizado": 300.0, "atingimento": 2.0}, {"realizado": 330.0, "atingimento": 1.5}, {"realizado": 360.0, "atingimento": 1.0}, {"realizado": 390.0, "atingimento": 0.7}, {"realizado": 420.0, "atingimento": 0.3}, {"realizado": 1000359.0, "atingimento": 0.0}]}, {"realizado": 0.0, "meta": 0.89, "peso": 0.2, "atingimento": 0.0, "pontos": 0.0, "nome": "MONITORIA", "regua": [{"realizado": 0.84, "atingimento": 0.0}, {"realizado": 0.85, "atingimento": 0.8}, {"realizado": 0.89, "atingimento": 1.0}, {"realizado": 0.92, "atingimento": 1.5}, {"realizado": 0.95, "atingimento": 2.0}]}, {"realizado": 0.9203007518796992, "meta": 0.89, "peso": 0.25, "atingimento": 2.0, "pontos": 0.5, "nome": "ADERENCIA", "regua": [{"realizado": 0.84, "atingimento": 0.0}, {"realizado": 0.85, "atingimento": 0.8}, {"realizado": 0.89, "atingimento": 1.0}, {"realizado": 0.92, "atingimento": 1.5}, {"realizado": 0.95, "atingimento": 2.0}]}],
                     "pontos": 0.0,
                     "pesos": 0.0,
                     "target": 0}
             }
         };
 
+// FUNCTIONS
+function secondsToTime(seconds) {
+    var hours = Math.floor(seconds / 3600);
+    var minutes = Math.floor((seconds % 3600) / 60);
+    var seconds = Math.floor(seconds % 60);
+    return (hours < 10 ? "0" + hours : hours) + ":" +
+            (minutes < 10 ? "0" + minutes : minutes) + ":" +
+            (seconds < 10 ? "0" + seconds : seconds);
+}
 
+// COMPONENTS
 Vue.component('simulador-form', {
     props: {
         piv: Object
@@ -70,19 +80,20 @@ Vue.component('indicadores-form', {
 
 Vue.component('celula-form', {
     template: '#celula-form',
-    data: function() {
-        return data;
-    },
     methods: {
         getTarget: function() {
-            instance.$emit('getTarget');
+            instance.$emit('getMeta');
         }
+    },
+    data: function() {
+        return data;
     }
 });
 
 Vue.component('botoes-acao', {
+    props: ['show'],
     template: '<div>\n\
-                    <button type="button" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Indicadores</button>\n\
+                    <button type="button" v-show="show" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Indicadores</button>\n\
                     <button type="button" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>\n\
                 </div>',
     methods: {
@@ -155,7 +166,6 @@ var instance = new Vue({
                 _metaPiv.indicadores[i].realizado = _metaPiv.indicadores[i].meta;
             }
             _metaPiv.op.faltas = 0;
-
             self.setIndicadores(_metaPiv);
         },
         loadSession: function() {
@@ -194,7 +204,13 @@ var instance = new Vue({
             // MONITORIA
             var _monitoria = (self.getIndicadorPorNome("MONITORIA", piv.indicadores).realizado) * 100;
             self.vm.monitoria = _monitoria.toFixed(2);
-            console.log(self.vm.monitoria)
+
+
+            // ADERENCIA
+            var _adr = (self.getIndicadorPorNome("ADERENCIA", piv.indicadores).realizado) * 100;
+            if (_adr) {
+                self.vm.adr = _adr.toFixed(2);
+            }
 
             // FALTAS
             var _faltas = piv.op.faltas;
@@ -205,22 +221,17 @@ var instance = new Vue({
             }
 
             // FCR
-            var _fcr = self.getIndicadorPorNome("FCR", piv.indicadores).realizado * 100;
+            var _fcr = (self.getIndicadorPorNome("FCR", piv.indicadores).realizado) * 100;
             if (_fcr) {
                 self.vm.fcr = _fcr.toFixed(2);
             }
 
             // TMA
-            var _tma = moment("1900-01-01 00:00:00").add(self.getIndicadorPorNome("TMA", piv.indicadores).realizado, 'seconds').format("HH:mm:ss");
+            var _tma = secondsToTime(self.getIndicadorPorNome("TMA", piv.indicadores).realizado);
             if (_tma) {
                 self.vm.tma = _tma;
             }
 
-            // ADERENCIA
-            var _adr = (self.getIndicadorPorNome("ADERENCIA", piv.indicadores).realizado * 100);
-            if (_adr) {
-                self.vm.adr = _adr.toFixed(2);
-            }
         },
         loadIndicadores: function() {
             var self = this;
@@ -237,7 +248,6 @@ var instance = new Vue({
 
                         self.currentViewForm = 'celula-form';
                         self.getEquipes();
-                        self.vm.tma = moment("1900-01-01 00:00:00").add(100, 'seconds').format("HH:mm:ss");
                     }
                 },
                 error: function() {
@@ -250,19 +260,14 @@ var instance = new Vue({
         },
         getTarget:
                 _.debounce(function() {
-
                     var self = this;
-                    var _monitoria = self.vm.monitoria / 100;
-                    if (!_monitoria) {
-                        _monitoria = 0;
-                    }
 
                     var simulator =
                             {"s": {
                                     "fcr": {realizado: (self.vm.fcr / 100)},
                                     "adr": {realizado: (self.vm.adr / 100)},
                                     "tma": {realizado: moment.duration(self.vm.tma, "HH:mm:ss").asSeconds()},
-                                    "monitoria": {realizado: _monitoria},
+                                    "monitoria": {realizado: (self.vm.monitoria / 100)},
                                     "faltas": self.vm.faltas,
                                     op: self.vm.piv.op}
                             };
@@ -292,12 +297,10 @@ var instance = new Vue({
 
 // Events
 instance.$on('loadIndicadores', function() {
-    console.log("loadIndicadores");
     this.loadIndicadores();
 });
 
 instance.$on('getMeta', function() {
-    console.log("getMeta");
     this.getMeta();
     this.getTarget();
 });
