@@ -13,7 +13,7 @@
                     <h1>Simulador PIV</h1>
                 </div>
                 <div v-show="show">
-                    <component v-bind:is="currentViewForm"></component>
+                    <component v-bind:op="vm.piv.op" v-bind:is="currentViewForm"></component>
                     <hr>
                     <simulador-form v-bind:piv="vm.piv"></simulador-form>
                 </div>
@@ -34,24 +34,18 @@
             <tbody>
                 <tr>
                     <th class="row"><label for="nome">Nome:</label></th>
-                    <td><span id="nome" v-text="vm.piv.op.nome"></span></td>
+                    <td><span id="nome" v-text="op.nome"></span></td>
                 </tr>
                 <tr>
                     <th class="row"><label for="super">Supervisão:</label></th>
-                    <td><span id="super" v-text="vm.piv.op.nomeSupervisor"></span></td>
+                    <td><span id="super" v-text="op.nomeSupervisor"></span></td>
                 </tr>
                 <tr>
                     <th class="row"><label for="equipe">Equipe:</label></th>
-                    <td><span id="equipe" v-text="vm.piv.op.equipe"></span></td>
+                    <td><span id="equipe" v-text="op.equipe"></span></td>
                 </tr>
             </tbody>
         </table>
-        <hr>
-
-        <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
-        <button type="button" class="btn btn-default btn-xs" @click="loadIndicadores()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Carregar Indicadores</button>
-        <button type="button" class="btn btn-primary btn-xs" @click="getMeta()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>
-
     </div>
 
 </script>
@@ -70,9 +64,13 @@
     </div>
 </script>
 
-<script type="text/html" id="simulator">
+<script type="text/html" id="indicadores-form">
 
     <div class="row" v-show="vm.piv.op.equipe">
+
+        <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
+        <botoes-acao></botoes-acao>
+        <hr>
 
         <div class="col-xs-1"></div>
 

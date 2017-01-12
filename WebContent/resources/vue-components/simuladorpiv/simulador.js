@@ -26,8 +26,7 @@ var data =
                     "pesos": 0.0,
                     "target": 0}
             }
-        }
-
+        };
 
 
 Vue.component('simulador-form', {
@@ -35,48 +34,18 @@ Vue.component('simulador-form', {
         piv: Object
     },
     template: '<indicadores-form v-bind:target="piv.target"></indicadores-form>',
-    methods: {
-        getTarget:
-                _.debounce(function() {
-
-                    vm.$emit('test', 'hi');
-
-                    var self = this;
-                    var simulator =
-                            {"s": {
-                                    "fcr": {realizado: (self.piv.fcr / 100)},
-                                    "adr": {realizado: (self.piv.adr / 100)},
-                                    "tma": {realizado: moment.duration(self.piv.tma, "HH:mm:ss").asSeconds()},
-                                    "monitoria": {realizado: (self.piv.monitoria / 100)},
-                                    "faltas": self.piv.faltas,
-                                    op: self.piv.op}
-                            };
-
-                    $.ajax({
-                        type: "POST",
-                        data: JSON.stringify(simulator),
-                        url: pivURL2,
-                        dataType: "json",
-                        beforeSend: function(xhr) {
-                            xhr.setRequestHeader("Content-Type", "application/json");
-                        },
-                        error: function() {
-                            self.currentViewForm = 'indisponivel-form';
-                        },
-                        success: function(data) {
-                            this.piv = data.calculoPivFacade;
-                        }
-                    });
-                }, 1000)
+    data: function() {
+        return data;
     }
-})
+});
+
 
 Vue.component('indicadores-form', {
     props: {
         target: {
             type: Number,
             default: function() {
-                return 0
+                return 0;
             }
         }
     },
@@ -87,80 +56,84 @@ Vue.component('indicadores-form', {
             return _target;
         }
     },
-    template: '#simulator',
     methods: {
-        getTarget:
-                _.debounce(function() {
-
-                    var self = this;
-                    var simulator =
-                            {"s": {
-                                    "fcr": {realizado: (self.vm.fcr / 100)},
-                                    "adr": {realizado: (self.vm.adr / 100)},
-                                    "tma": {realizado: moment.duration(self.vm.tma, "HH:mm:ss").asSeconds()},
-                                    "monitoria": {realizado: (self.vm.monitoria / 100)},
-                                    "faltas": self.vm.faltas,
-                                    op: self.vm.piv.op}
-                            };
-
-                    console.log(simulator)
-
-                    $.ajax({
-                        type: "POST",
-                        data: JSON.stringify(simulator),
-                        url: pivURL2,
-                        dataType: "json",
-                        beforeSend: function(xhr) {
-                            xhr.setRequestHeader("Content-Type", "application/json");
-                        },
-                        error: function() {
-                            self.currentViewForm = 'indisponivel-form';
-                        },
-                        success: function(data) {
-                            self.vm.piv = data.calculoPivFacade;
-                        }
-                    });
-                }, 1000)
+        getTarget: function() {
+            instance.$emit('getTarget');
+        }
     },
+    template: '#indicadores-form',
     data: function() {
-        return data
+        return data;
     }
-})
-
+});
 
 
 Vue.component('celula-form', {
     template: '#celula-form',
     data: function() {
-        return data
+        return data;
     },
     methods: {
         getTarget: function() {
-            vm.notifier();
+            instance.$emit('getTarget');
         }
     }
-})
+});
+
+Vue.component('botoes-acao', {
+    template: '<div>\n\
+                    <button type="button" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Indicadores</button>\n\
+                    <button type="button" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>\n\
+                </div>',
+    methods: {
+        getMetaAcao: function() {
+            instance.$emit('getMeta');
+        },
+        loadIndicadoresAcao: function() {
+            instance.$emit('loadIndicadores');
+        }
+    }
+});
+
 
 
 Vue.component('dados-form', {
     template: '#dados-form',
-    methods: {
-        getMeta: function() {
-            _metaPiv = data.vm.piv;
-            for (i = 0; i < _metaPiv.indicadores.length; i++) {
-                _metaPiv.indicadores[i].realizado = _metaPiv.indicadores[i].meta;
+    props: {
+        op: Object
+    },
+    data: function() {
+        return data;
+    }
+});
+
+
+// INDISPONIVEL FORM
+Vue.component('indisponivel-form', {
+    template: '<div>Funcionalidade indisponível no momento.</div>',
+    data: function() {
+        return data
+    }
+})
+
+Vue.component('mensagem-piv', {
+    template: '<div class="alert alert-warning small" role="alert">{{texto}}</div>',
+    props: {
+        texto: {
+            type: String,
+            default: function() {
+                return ""
             }
-            vm.setIndicadores(_metaPiv);
         }
-
-
     },
     data: function() {
         return data
     }
 })
 
-var vm = new Vue({
+
+
+var instance = new Vue({
     el: '#piv',
     data: data,
     created: function() {
@@ -168,18 +141,22 @@ var vm = new Vue({
         self.loadSession();
     },
     methods: {
-        notifier: function() {
-            var self = this;
-            self.$children[0].getTarget();
-        },
-        getIndicadorPorNome: function(nome) {
-            var self = this;
-            var inds = self.usuario.piv.indicadores;
+        getIndicadorPorNome: function(nome, inds) {
             for (i = 0; i < inds.length; i++) {
-                if (inds[i].nome == nome) {
+                if (inds[i].nome === nome) {
                     return inds[i];
                 }
             }
+        },
+        getMeta: function() {
+            var self = this;
+            _metaPiv = self.vm.piv;
+            for (i = 0; i < _metaPiv.indicadores.length; i++) {
+                _metaPiv.indicadores[i].realizado = _metaPiv.indicadores[i].meta;
+            }
+            _metaPiv.op.faltas = 0;
+
+            self.setIndicadores(_metaPiv);
         },
         loadSession: function() {
             var self = this;
@@ -188,7 +165,11 @@ var vm = new Vue({
                 dataType: "json",
                 url: sessionURL,
                 success: function(data) {
-                    self.usuario = data.usuario;
+                    if (data.usuario) {
+                        self.usuario = data.usuario;
+                    } else {
+                        location.reload();
+                    }
                 },
                 complete: function() {
                     self.loadIndicadores();
@@ -208,15 +189,12 @@ var vm = new Vue({
         },
         setIndicadores: function(piv) {
             var self = this;
-
-            self.usuario.piv = piv
-            self.vm.piv = piv
+            self.vm.piv = piv;
 
             // MONITORIA
-            var _monitoria = self.getIndicadorPorNome("MONITORIA").realizado * 100;
-            if (_monitoria) {
-                self.vm.monitoria = _monitoria;
-            }
+            var _monitoria = (self.getIndicadorPorNome("MONITORIA", piv.indicadores).realizado) * 100;
+            self.vm.monitoria = _monitoria.toFixed(2);
+            console.log(self.vm.monitoria)
 
             // FALTAS
             var _faltas = piv.op.faltas;
@@ -227,19 +205,19 @@ var vm = new Vue({
             }
 
             // FCR
-            var _fcr = self.getIndicadorPorNome("FCR").realizado * 100;
+            var _fcr = self.getIndicadorPorNome("FCR", piv.indicadores).realizado * 100;
             if (_fcr) {
                 self.vm.fcr = _fcr.toFixed(2);
             }
 
             // TMA
-            var _tma = moment("1900-01-01 00:00:00").add(self.getIndicadorPorNome("TMA").realizado, 'seconds').format("HH:mm:ss");
+            var _tma = moment("1900-01-01 00:00:00").add(self.getIndicadorPorNome("TMA", piv.indicadores).realizado, 'seconds').format("HH:mm:ss");
             if (_tma) {
                 self.vm.tma = _tma;
             }
 
             // ADERENCIA
-            var _adr = (self.getIndicadorPorNome("ADERENCIA").realizado * 100);
+            var _adr = (self.getIndicadorPorNome("ADERENCIA", piv.indicadores).realizado * 100);
             if (_adr) {
                 self.vm.adr = _adr.toFixed(2);
             }
@@ -254,8 +232,9 @@ var vm = new Vue({
 
                     var _piv = data.calculoPivFacade;
                     if (_piv) {
-                        self.setIndicadores(_piv)
+                        self.setIndicadores(_piv);
                     } else {
+
                         self.currentViewForm = 'celula-form';
                         self.getEquipes();
                         self.vm.tma = moment("1900-01-01 00:00:00").add(100, 'seconds').format("HH:mm:ss");
@@ -268,36 +247,69 @@ var vm = new Vue({
                     self.show = true;
                 }
             });
-        }
+        },
+        getTarget:
+                _.debounce(function() {
+
+                    var self = this;
+                    var _monitoria = self.vm.monitoria / 100;
+                    if (!_monitoria) {
+                        _monitoria = 0;
+                    }
+
+                    var simulator =
+                            {"s": {
+                                    "fcr": {realizado: (self.vm.fcr / 100)},
+                                    "adr": {realizado: (self.vm.adr / 100)},
+                                    "tma": {realizado: moment.duration(self.vm.tma, "HH:mm:ss").asSeconds()},
+                                    "monitoria": {realizado: _monitoria},
+                                    "faltas": self.vm.faltas,
+                                    op: self.vm.piv.op}
+                            };
+
+                    $.ajax({
+                        type: "POST",
+                        data: JSON.stringify(simulator),
+                        url: pivURL2,
+                        dataType: "json",
+                        beforeSend: function(xhr) {
+                            xhr.setRequestHeader("Content-Type", "application/json");
+                        },
+                        error: function() {
+                            self.currentViewForm = 'indisponivel-form';
+                        },
+                        success: function(data) {
+                            self.vm.piv = data.calculoPivFacade;
+                        }
+                    });
+                }, 1000)
     }
-})
+});
+
+
+
 
 
 // Events
-vm.$on('test', function(msg) {
-    console.log(msg)
-})
+instance.$on('loadIndicadores', function() {
+    console.log("loadIndicadores");
+    this.loadIndicadores();
+});
+
+instance.$on('getMeta', function() {
+    console.log("getMeta");
+    this.getMeta();
+    this.getTarget();
+});
+
+instance.$on('setIndicadores', function(ind) {
+    this.setIndicadores(ind);
+});
+
+instance.$on('getTarget', function() {
+    this.getTarget();
+});
 
 
 
 
-
-// INDISPONIVEL FORM
-Vue.component('indisponivel-form', {
-    template: '<div>Funcionalidade indisponível no momento.</div>',
-    data: function() {
-        return data
-    }
-})
-
-Vue.component('mensagem-piv', {
-    template: '<div class="alert alert-warning" role="alert">{{texto}}</div>',
-    props: {
-        texto: {
-            type: String,
-            default: function() {
-                return ""
-            }
-        }
-    }
-})
