@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
     <head>
-        <title><decorator:title default="Portal Efika"/></title>
+        <title><decorator:title default="Simulador PIV"/></title>
         <meta charset="utf-8">
 
         <!-- import CSS -->

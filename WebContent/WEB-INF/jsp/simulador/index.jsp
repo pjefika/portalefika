@@ -6,7 +6,6 @@
 <div class="container">
 
     <div id="piv" v-cloak>
-
         <transition name="fade">
             <div>
                 <div class="page-header">
@@ -14,7 +13,6 @@
                 </div>
                 <div v-show="show">
                     <component v-bind:op="vm.piv.op" v-bind:is="currentViewForm"></component>
-                    <hr>
                     <simulador-form v-bind:piv="vm.piv"></simulador-form>
                 </div>
                 <div v-show="!show">
@@ -23,13 +21,12 @@
                 </div>
             </div>
         </transition>
-
     </div>
 </div>
 
 <script type="text/html" id="dados-form">
 
-    <div>
+    <div class="row">
         <table class="table small table-bordered table-condensed">
             <tbody>
                 <tr>
@@ -52,100 +49,156 @@
 
 
 <script type="text/html" id="celula-form">
-    <div>
+    <div class="row">
         <label>Selecione a Equipe</label>
         <select class="form-control" v-model="vm.piv.op.equipe" @change="getTarget()">
             <option value="" disabled>Selecione</option>
             <option v-for="eqp in equipes" v-bind:value="eqp.equipe">
                 {{ eqp.nomeEquipe }}
             </option>
-
         </select>
     </div>
 </script>
 
-<script type="text/html" id="indicadores-form">
 
+
+<script type="text/html" id="tabela-meta">
+    <div>
+        <table class="table small table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Meta</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{meta}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</script>
+
+<script type="text/html" id="tabela-regua">
+    <table class="table small table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Realizado</th>
+                <th>Atingimento</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="r in regua">
+                <td>{{r.realizado}}</td>
+                <td>{{r.atingimento}}</td>
+            </tr>
+        </tbody>
+    </table>
+</script>
+
+
+<script type="text/html" id="indicadores-form">
 
     <div class="row" v-show="vm.piv.op.equipe">
 
-        <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
         <div v-bind:show="currentViewForm == 'dados-form'">
             <botoes-acao v-bind:show="currentViewForm == 'dados-form'"></botoes-acao>
             <hr>
         </div>
 
         <div class="row">
+            <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
 
-            <div class="col-xs-1"></div>
-
-            <div class="col-xs-2">
-                <div class="form-group">
-                    <label for="fcr">FCR</label>
-                    <a data-placement="top" data-toggle="popover"  data-html="true" data-content="&lt;strong&gt;dev&lt;/strong&gt;" title="Informações" data-container="body" type="button">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
-                    <div class="input-group">
-                        <input id="fcr" type="number" v-model="vm.fcr" min="0" @change="getTarget()" max="100" class="form-control" placeholder="FCR" aria-describedby="fcr-addon1">
-                        <span class="input-group-addon" id="fcr-addon1">%</span>
+            <div class="panel panel-default">
+                <div class="panel-heading">Indicadores</div>
+                <div class="panel-body">
+                    <div class="col-xs-1"></div>
+                    <div class="col-xs-2">
+                        <div class="form-group">
+                            <label for="fcr">FCR</label>
+                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                                <span class="glyphicon glyphicon-info-sign"></span>
+                                <div class="hide conteudoPopOver">
+                                    <tabela-meta v-bind:meta="vm.fcr.meta"></tabela-meta>
+                                    <tabela-regua v-bind:regua="vm.fcr.regua"></tabela-regua>
+                                </div>
+                            </a>
+                            <div class="input-group">
+                                <input id="fcr" type="number" v-model="vm.fcr.realizado" min="0" @change="getTarget()" max="100" class="form-control" placeholder="FCR" aria-describedby="fcr-addon1">
+                                <span class="input-group-addon" id="fcr-addon1">%</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="col-xs-2">
+                        <div class="form-group">
+                            <label for="adr">Aderência</label>
+                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                                <span class="glyphicon glyphicon-info-sign"></span>
+                                <div class="hide conteudoPopOver">
+                                    <tabela-meta v-bind:meta="vm.adr.meta"></tabela-meta>
+                                    <tabela-regua v-bind:regua="vm.adr.regua"></tabela-regua>
+                                </div>
+                            </a>
+                            <div class="input-group">
+                                <input id="adr" v-model="vm.adr.realizado" type="number"  min="0" @change="getTarget()" max="100" class="form-control" placeholder="Aderência" aria-describedby="adr-addon1">
+                                <span class="input-group-addon" id="adr-addon1">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <div class="form-group">
+                            <label for="monitoria">Monitoria</label>
+                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                                <span class="glyphicon glyphicon-info-sign"></span>
+                                <div class="hide conteudoPopOver">
+                                    <tabela-meta v-bind:meta="vm.monitoria.meta"></tabela-meta>
+                                    <tabela-regua v-bind:regua="vm.monitoria.regua"></tabela-regua>
+                                </div>
+                            </a>
+                            <div class="input-group">
+                                <input v-model="vm.monitoria.realizado"  id="monitoria" type="number" @change="getTarget()" min="0" max="100" class="form-control" placeholder="Monitoria" aria-describedby="fcr-addon1">
+                                <span class="input-group-addon" id="monitoria-addon1"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-2">
+                        <div class="form-group">
+                            <label for="tma">TMA</label>
+                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                                <span class="glyphicon glyphicon-info-sign"></span>
+                                <div class="hide conteudoPopOver">
+                                    <tabela-meta v-bind:meta="vm.tma.meta"></tabela-meta>
+                                    <tabela-regua v-bind:regua="vm.tma.regua"></tabela-regua>
+                                </div>
+                            </a>
+                            <div class="input-group">
+                                <input v-model="vm.tma.realizado" id="tma" type="text" placeholder="TMA" class="form-control time" maxlength="8" @change="getTarget()">
+                                <span class="input-group-addon" id="basic-tma"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-xs-2">
+                        <div class="form-group">
+                            <label for="tma">Faltas</label>
+                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                                <span class="glyphicon glyphicon-info-sign"></span>
+                            </a>
+                            <div class="input-group">
+                                <input v-model="vm.faltas" id="faltas" type="number" placeholder="Faltas" class="form-control" @change="getTarget()">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-1"></div>
                 </div>
             </div>
 
-            <div class="col-xs-2">
-                <div class="form-group">
-                    <label for="adr">Aderência</label>
-                    <a data-placement="top" data-toggle="popover"  data-html="true" data-content="&lt;strong&gt;dev&lt;/strong&gt;" title="Informações" data-container="body" type="button">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
-                    <div class="input-group">
-                        <input id="adr" v-model="vm.adr" type="number"  min="0" @change="getTarget()" max="100" class="form-control" placeholder="Aderência" aria-describedby="adr-addon1">
-                        <span class="input-group-addon" id="adr-addon1">%</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xs-2">
-                <div class="form-group">
-                    <label for="monitoria">Monitoria</label>
-                    <a data-placement="top" data-toggle="popover"  data-html="true" data-content="&lt;strong&gt;dev&lt;/strong&gt;" title="Informações" data-container="body" type="button">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
-                    <div class="input-group">
-                        <input v-model="vm.monitoria"  id="monitoria" type="number" @change="getTarget()" min="0" max="100" class="form-control" placeholder="Monitoria" aria-describedby="fcr-addon1">
-                        <span class="input-group-addon" id="monitoria-addon1"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xs-2">
-                <div class="form-group">
-                    <label for="tma">TMA</label>
-                    <a data-placement="top" data-toggle="popover"  data-html="true" data-content="&lt;strong&gt;dev&lt;/strong&gt;" title="&lt;small&gt;Informa&ccedil;&otilde;es&lt;/small&gt;" data-container="body" type="button">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
-                    <div class="input-group">
-                        <input v-model="vm.tma" id="tma" type="text" placeholder="TMA" class="form-control time" maxlength="8" @change="getTarget()">
-                        <span class="input-group-addon" id="basic-tma"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span></span>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-xs-2">
-                <div class="form-group">
-                    <label for="tma">Faltas</label>
-                    <a data-placement="top" data-toggle="popover"  data-html="true" data-content="&lt;strong&gt;dev&lt;/strong&gt;" title="Informações" data-container="body" type="button">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
-                    <div class="input-group">
-                        <input v-model="vm.faltas" id="faltas" type="number" placeholder="Faltas" class="form-control" @change="getTarget()">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xs-1"></div>
         </div>
 
         <div class="row center-block">
@@ -154,8 +207,8 @@
 
             <div class="col-xs-4">
                 <div class="form-group">
-                    <label for="tma">Target</label>
                     <div class="panel panel-default">
+                        <div for="tma" class="panel-heading">Target</div>
                         <div class="panel-body">
                             <h2 class="text-center"><span v-text="normalizedTarget"></span>%</h2>
                         </div>
@@ -166,8 +219,6 @@
             <div class="col-xs-4"></div>
 
         </div>
-
-
     </div>
 </script>
 
