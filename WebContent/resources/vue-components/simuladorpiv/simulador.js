@@ -82,7 +82,7 @@ Vue.component('celula-form', {
     template: '#celula-form',
     methods: {
         getTarget: function() {
-            instance.$emit('getMeta');
+            instance.$emit('getTarget');
         }
     },
     data: function() {
@@ -94,12 +94,13 @@ Vue.component('botoes-acao', {
     props: ['show'],
     template: '<div>\n\
                     <button type="button" v-show="show" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Indicadores</button>\n\
-                    <button type="button" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>\n\
+                    <button type="button" v-show="!show" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>\n\
                 </div>',
     methods: {
-        getMetaAcao: function() {
+        getMetaAcao: _.debounce(function() {
             instance.$emit('getMeta');
-        },
+            instance.$emit('getTarget');
+        }, 1000),
         loadIndicadoresAcao: function() {
             instance.$emit('loadIndicadores');
         }
@@ -162,7 +163,9 @@ var instance = new Vue({
         getMeta: function() {
             var self = this;
             _metaPiv = self.vm.piv;
+
             for (i = 0; i < _metaPiv.indicadores.length; i++) {
+                console.log(_metaPiv.indicadores[i].meta)
                 _metaPiv.indicadores[i].realizado = _metaPiv.indicadores[i].meta;
             }
             _metaPiv.op.faltas = 0;
@@ -203,13 +206,18 @@ var instance = new Vue({
 
             // MONITORIA
             var _monitoria = (self.getIndicadorPorNome("MONITORIA", piv.indicadores).realizado) * 100;
-            self.vm.monitoria = _monitoria.toFixed(2);
-
+            if (_monitoria) {
+                self.vm.monitoria = _monitoria.toFixed(2);
+            } else {
+                self.vm.monitoria = 0;
+            }
 
             // ADERENCIA
             var _adr = (self.getIndicadorPorNome("ADERENCIA", piv.indicadores).realizado) * 100;
             if (_adr) {
                 self.vm.adr = _adr.toFixed(2);
+            } else {
+                self.vm.adr = 0;
             }
 
             // FALTAS
@@ -224,12 +232,16 @@ var instance = new Vue({
             var _fcr = (self.getIndicadorPorNome("FCR", piv.indicadores).realizado) * 100;
             if (_fcr) {
                 self.vm.fcr = _fcr.toFixed(2);
+            } else {
+                self.vm.fcr = 0;
             }
 
             // TMA
             var _tma = secondsToTime(self.getIndicadorPorNome("TMA", piv.indicadores).realizado);
             if (_tma) {
                 self.vm.tma = _tma;
+            } else {
+                self.vm.tma = "00:00:00";
             }
 
         },
@@ -259,7 +271,7 @@ var instance = new Vue({
             });
         },
         getTarget:
-                _.debounce(function() {
+                function() {
                     var self = this;
 
                     var simulator =
@@ -287,7 +299,7 @@ var instance = new Vue({
                             self.vm.piv = data.calculoPivFacade;
                         }
                     });
-                }, 1000)
+                }
     }
 });
 
@@ -302,7 +314,6 @@ instance.$on('loadIndicadores', function() {
 
 instance.$on('getMeta', function() {
     this.getMeta();
-    this.getTarget();
 });
 
 instance.$on('setIndicadores', function(ind) {
@@ -313,6 +324,9 @@ instance.$on('getTarget', function() {
     this.getTarget();
 });
 
+$("[data-toggle=popover]").popover({
+    html: true
+});
 
 
 
