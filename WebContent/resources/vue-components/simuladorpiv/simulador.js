@@ -21,10 +21,15 @@ var Indicador = function(json) {
             this.meta = secondsToTime(json.meta);
 
         }
+
         this.atingimento = json.atingimento;
         //
         this.peso = json.peso;
+
+        console.log(json.regua)
+
         this.regua = json.regua;
+
     } else {
         this.realizado = 0;
     }
@@ -42,114 +47,71 @@ Indicador.prototype.getRealizado = function() {
 }
 
 
-var data =
-        {
-            equipes: {},
-            currentViewForm: 'dados-form',
-            show: false,
-            vm: {
-                fcr: new Indicador(),
-                tma: new Indicador(),
-                monitoria: new Indicador(),
-                adr: new Indicador(),
-                faltas: 0,
-                piv: {
-                    "op": {
-                        "loginOperador": "",
-                        "nome": "",
-                        "nomeSupervisor": "",
-                        "equipe": "",
-                        "faltas": 0
-                    },
-                    "indicadores": [
-                        new Indicador({
-                            "realizado": 0.97,
-                            "meta": 0,
-                            "peso": 0,
-                            "atingimento": 2,
-                            "pontos": 0.6,
-                            "nome": "FCR",
-                            "regua": []
-                        }),
-                        new Indicador({
-                            "realizado": 343,
-                            "meta": 360,
-                            "peso": 0.25,
-                            "atingimento": 1,
-                            "pontos": 0.25,
-                            "nome": "TMA",
-                            "regua": []
-                        }),
-                        new Indicador({
-                            "realizado": 0,
-                            "meta": 0.89,
-                            "peso": 0.2,
-                            "atingimento": 0,
-                            "pontos": 0,
-                            "nome": "MONITORIA",
-                            "regua": [
-                                {
-                                    "realizado": 0.84,
-                                    "atingimento": 0
-                                },
-                                {
-                                    "realizado": 0.85,
-                                    "atingimento": 0.8
-                                },
-                                {
-                                    "realizado": 0.89,
-                                    "atingimento": 1
-                                },
-                                {
-                                    "realizado": 0.92,
-                                    "atingimento": 1.5
-                                },
-                                {
-                                    "realizado": 0.95,
-                                    "atingimento": 2
-                                }
-                            ]
-                        }),
-                        new Indicador({
-                            "realizado": 0.9203007518796992,
-                            "meta": 0.89,
-                            "peso": 0.25,
-                            "atingimento": 2,
-                            "pontos": 0.5,
-                            "nome": "ADERENCIA",
-                            "regua": [
-                                {
-                                    "realizado": 0.84,
-                                    "atingimento": 0
-                                },
-                                {
-                                    "realizado": 0.85,
-                                    "atingimento": 0.8
-                                },
-                                {
-                                    "realizado": 0.89,
-                                    "atingimento": 1
-                                },
-                                {
-                                    "realizado": 0.92,
-                                    "atingimento": 1.5
-                                },
-                                {
-                                    "realizado": 0.95,
-                                    "atingimento": 2
-                                }
-                            ]
-                        }
-                        )],
-                    "mensagens": [],
-                    "pontos": 1.35,
-                    "pesos": 1,
-                    "target": 0
+var data = {
+    equipes: {},
+    currentViewForm: 'dados-form',
+    show: false,
+    vm: {
+        fcr: new Indicador(),
+        tma: new Indicador(),
+        monitoria: new Indicador(),
+        adr: new Indicador(),
+        faltas: 0,
+        piv: {
+            "op": {
+                "loginOperador": "",
+                "nome": "",
+                "nomeSupervisor": "",
+                "equipe": "",
+                "faltas": 0
+            },
+            "indicadores": [
+                new Indicador({
+                    "realizado": 0.97,
+                    "meta": 0,
+                    "peso": 0,
+                    "atingimento": 2,
+                    "pontos": 0.6,
+                    "nome": "FCR",
+                    "regua": []
+                }),
+                new Indicador({
+                    "realizado": 343,
+                    "meta": 360,
+                    "peso": 0.25,
+                    "atingimento": 1,
+                    "pontos": 0.25,
+                    "nome": "TMA",
+                    "regua": []
+                }),
+                new Indicador({
+                    "realizado": 0,
+                    "meta": 0.89,
+                    "peso": 0.2,
+                    "atingimento": 0,
+                    "pontos": 0,
+                    "nome": "MONITORIA",
+                    "regua": []
+                }),
+                new Indicador({
+                    "realizado": 0.9203007518796992,
+                    "meta": 0.89,
+                    "peso": 0.25,
+                    "atingimento": 2,
+                    "pontos": 0.5,
+                    "nome": "ADERENCIA",
+                    "regua": []
                 }
-            }
-        };
-Vue.config.silent = true
+                )],
+            "mensagens": [],
+            "pontos": 1.35,
+            "pesos": 1,
+            "target": 0
+        }
+    }
+};
 
+Vue.config.silent = true;
 
 // FUNCTIONS
 function secondsToTime(seconds) {
@@ -267,7 +229,6 @@ Vue.component('dados-form', {
         return data;
     }
 });
-// INDISPONIVEL FORM
 Vue.component('indisponivel-form', {
     template: '<div>Funcionalidade indisponível no momento.</div>',
     data: function() {
@@ -288,6 +249,7 @@ Vue.component('mensagem-piv', {
         return data;
     }
 });
+
 var instance = new Vue({
     el: '#piv',
     data: data,
@@ -425,15 +387,14 @@ var instance = new Vue({
         getTarget:
                 function() {
                     var self = this;
-                    var simulator =
-                            {"s": {
-                                    "fcr": {realizado: self.vm.fcr.getRealizado()},
-                                    "adr": {realizado: self.vm.adr.getRealizado()},
-                                    "tma": {realizado: self.vm.tma.getRealizado()},
-                                    "monitoria": {realizado: self.vm.monitoria.getRealizado()},
-                                    "faltas": self.vm.faltas,
-                                    op: self.vm.piv.op}
-                            };
+                    var simulator = {"s": {
+                            "fcr": {realizado: self.vm.fcr.getRealizado()},
+                            "adr": {realizado: self.vm.adr.getRealizado()},
+                            "tma": {realizado: self.vm.tma.getRealizado()},
+                            "monitoria": {realizado: self.vm.monitoria.getRealizado()},
+                            "faltas": self.vm.faltas,
+                            op: self.vm.piv.op}
+                    };
                     $.ajax({
                         type: "POST",
                         data: JSON.stringify(simulator),
@@ -442,16 +403,17 @@ var instance = new Vue({
                         beforeSend: function(xhr) {
                             xhr.setRequestHeader("Content-Type", "application/json");
                         },
-                        error: function(er) {
+                        error: function() {
                             self.currentViewForm = 'indisponivel-form';
                         },
                         success: function(data) {
-                            self.vm.piv = data.calculoPivFacade;
+                            self.setIndicadores(data.calculoPivFacade)
                         }
                     });
                 }
     }
 });
+
 // Events
 instance.$on('loadIndicadores', function() {
     this.loadIndicadores();
@@ -468,6 +430,8 @@ instance.$on('getTarget', function() {
 instance.$on('getIndicadorPorNome', function(nome) {
     return this.getIndicadorPorNome(nome, this.vm.piv.indicadores)
 });
+
+// HTML TO POPOVER
 $("[data-toggle=popover]").popover({
     html: true,
     content: function() {

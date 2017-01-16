@@ -21,7 +21,9 @@
                     </p>
                 </div>
             </div>
-            <!--</transition>-->
+        </transition>
+        <h4>Homologação: </h4>
+        {{vm}}
     </div>
 </div>
 
