@@ -7,6 +7,40 @@ var pivURL2 = "http://localhost:8080/pivAPI/operador/simulador/change/";
 var equipeURL = "http://localhost:8080/pivAPI/operador/simulador/equipes/";
 var pivManualURL = "http://localhost:8080/pivAPI/operador/simulador/manual/";
 var sessionURL = "/simuladorpiv/session/";
+// CLASSES
+var Indicador = function(json) {
+    if (json) {
+        //
+        this.nome = json.nome;
+        if (this.nome !== 'TMA') {
+            this.realizado = Number((json.realizado * 100).toFixed(2));
+            this.meta = json.meta * 100;
+
+        } else {
+            this.realizado = secondsToTime(json.realizado);
+            this.meta = secondsToTime(json.meta);
+
+        }
+        this.atingimento = json.atingimento;
+        //
+        this.peso = json.peso;
+        this.regua = json.regua;
+    } else {
+        this.realizado = 0;
+    }
+};
+Indicador.prototype.metaToRealizado = function()
+{
+    this.meta = this.realizado;
+};
+Indicador.prototype.getRealizado = function() {
+    if (this.nome != 'TMA') {
+        return (this.realizado * 0.01).toFixed(5);
+    } else {
+        return moment.duration(this.realizado, "HH:mm:ss").asSeconds();
+    }
+}
+
 
 var data =
         {
@@ -14,22 +48,111 @@ var data =
             currentViewForm: 'dados-form',
             show: false,
             vm: {
-                fcr: {realizado: 0},
-                tma: {realizado: 0},
-                monitoria: {realizado: 0},
-                adr: {realizado: 0},
+                fcr: new Indicador(),
+                tma: new Indicador(),
+                monitoria: new Indicador(),
+                adr: new Indicador(),
                 faltas: 0,
                 piv: {
-                    op: {equipe: ""},
-                    "indicadores": [{"realizado": 0.97, "meta": 0.765, "peso": 0.3, "atingimento": 2.0, "pontos": 0.6, "nome": "FCR", "regua": [{"realizado": 0.635, "atingimento": 0.0}, {"realizado": 0.645, "atingimento": 0.3}, {"realizado": 0.655, "atingimento": 0.35}, {"realizado": 0.665, "atingimento": 0.4}, {"realizado": 0.675, "atingimento": 0.45}, {"realizado": 0.685, "atingimento": 0.5}, {"realizado": 0.695, "atingimento": 0.55}, {"realizado": 0.705, "atingimento": 0.6}, {"realizado": 0.715, "atingimento": 0.65}, {"realizado": 0.725, "atingimento": 0.7}, {"realizado": 0.735, "atingimento": 0.75}, {"realizado": 0.745, "atingimento": 0.8}, {"realizado": 0.755, "atingimento": 0.85}, {"realizado": 0.765, "atingimento": 1.0}, {"realizado": 0.775, "atingimento": 1.05}, {"realizado": 0.785, "atingimento": 1.1}, {"realizado": 0.795, "atingimento": 1.2}, {"realizado": 0.805, "atingimento": 1.25}, {"realizado": 0.815, "atingimento": 1.3}, {"realizado": 0.825, "atingimento": 1.5}, {"realizado": 0.835, "atingimento": 2.0}]}, {"realizado": 343.0, "meta": 360.0, "peso": 0.25, "atingimento": 1.0, "pontos": 0.25, "nome": "TMA", "regua": [{"realizado": 120.0, "atingimento": 0.0}, {"realizado": 300.0, "atingimento": 2.0}, {"realizado": 330.0, "atingimento": 1.5}, {"realizado": 360.0, "atingimento": 1.0}, {"realizado": 390.0, "atingimento": 0.7}, {"realizado": 420.0, "atingimento": 0.3}, {"realizado": 1000359.0, "atingimento": 0.0}]}, {"realizado": 0.0, "meta": 0.89, "peso": 0.2, "atingimento": 0.0, "pontos": 0.0, "nome": "MONITORIA", "regua": [{"realizado": 0.84, "atingimento": 0.0}, {"realizado": 0.85, "atingimento": 0.8}, {"realizado": 0.89, "atingimento": 1.0}, {"realizado": 0.92, "atingimento": 1.5}, {"realizado": 0.95, "atingimento": 2.0}]}, {"realizado": 0.9203007518796992, "meta": 0.89, "peso": 0.25, "atingimento": 2.0, "pontos": 0.5, "nome": "ADERENCIA", "regua": [{"realizado": 0.84, "atingimento": 0.0}, {"realizado": 0.85, "atingimento": 0.8}, {"realizado": 0.89, "atingimento": 1.0}, {"realizado": 0.92, "atingimento": 1.5}, {"realizado": 0.95, "atingimento": 2.0}]}],
-                    "pontos": 0.0,
-                    "pesos": 0.0,
-                    "target": 0}
+                    "op": {
+                        "loginOperador": "",
+                        "nome": "",
+                        "nomeSupervisor": "",
+                        "equipe": "",
+                        "faltas": 0
+                    },
+                    "indicadores": [
+                        new Indicador({
+                            "realizado": 0.97,
+                            "meta": 0,
+                            "peso": 0,
+                            "atingimento": 2,
+                            "pontos": 0.6,
+                            "nome": "FCR",
+                            "regua": []
+                        }),
+                        new Indicador({
+                            "realizado": 343,
+                            "meta": 360,
+                            "peso": 0.25,
+                            "atingimento": 1,
+                            "pontos": 0.25,
+                            "nome": "TMA",
+                            "regua": []
+                        }),
+                        new Indicador({
+                            "realizado": 0,
+                            "meta": 0.89,
+                            "peso": 0.2,
+                            "atingimento": 0,
+                            "pontos": 0,
+                            "nome": "MONITORIA",
+                            "regua": [
+                                {
+                                    "realizado": 0.84,
+                                    "atingimento": 0
+                                },
+                                {
+                                    "realizado": 0.85,
+                                    "atingimento": 0.8
+                                },
+                                {
+                                    "realizado": 0.89,
+                                    "atingimento": 1
+                                },
+                                {
+                                    "realizado": 0.92,
+                                    "atingimento": 1.5
+                                },
+                                {
+                                    "realizado": 0.95,
+                                    "atingimento": 2
+                                }
+                            ]
+                        }),
+                        new Indicador({
+                            "realizado": 0.9203007518796992,
+                            "meta": 0.89,
+                            "peso": 0.25,
+                            "atingimento": 2,
+                            "pontos": 0.5,
+                            "nome": "ADERENCIA",
+                            "regua": [
+                                {
+                                    "realizado": 0.84,
+                                    "atingimento": 0
+                                },
+                                {
+                                    "realizado": 0.85,
+                                    "atingimento": 0.8
+                                },
+                                {
+                                    "realizado": 0.89,
+                                    "atingimento": 1
+                                },
+                                {
+                                    "realizado": 0.92,
+                                    "atingimento": 1.5
+                                },
+                                {
+                                    "realizado": 0.95,
+                                    "atingimento": 2
+                                }
+                            ]
+                        }
+                        )],
+                    "mensagens": [],
+                    "pontos": 1.35,
+                    "pesos": 1,
+                    "target": 0
+                }
             }
         };
+Vue.config.silent = true
+
 
 // FUNCTIONS
-var secondsToTime = function secondsToTime(seconds) {
+function secondsToTime(seconds) {
     var hours = Math.floor(seconds / 3600);
     var minutes = Math.floor((seconds % 3600) / 60);
     var seconds = Math.floor(seconds % 60);
@@ -48,9 +171,6 @@ Vue.component('simulador-form', {
         return data;
     }
 });
-
-
-
 Vue.component('tabela-meta', {
     props: ['meta'],
     template: '#tabela-meta',
@@ -58,16 +178,23 @@ Vue.component('tabela-meta', {
         return data;
     }
 });
-
-
 Vue.component('tabela-regua', {
-    props: ['regua'],
+    props: ['regua', 'indicador', 'atingimento'],
     template: '#tabela-regua',
+    methods: {
+        secondsToTime: function(seconds) {
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds % 3600) / 60);
+            var seconds = Math.floor(seconds % 60);
+            return (hours < 10 ? "0" + hours : hours) + ":" +
+                    (minutes < 10 ? "0" + minutes : minutes) + ":" +
+                    (seconds < 10 ? "0" + seconds : seconds);
+        }
+    },
     data: function() {
         return data;
     }
 });
-
 Vue.component('indicadores-form', {
     props: {
         target: {
@@ -103,8 +230,6 @@ Vue.component('indicadores-form', {
         return data;
     }
 });
-
-
 Vue.component('celula-form', {
     template: '#celula-form',
     methods: {
@@ -116,10 +241,6 @@ Vue.component('celula-form', {
         return data;
     }
 });
-
-
-
-
 Vue.component('botoes-acao', {
     props: ['show'],
     template: '<div class="row"><br>\n\
@@ -130,15 +251,13 @@ Vue.component('botoes-acao', {
         getMetaAcao: _.debounce(function() {
             instance.$emit('getMeta');
             instance.$emit('getTarget');
+
         }, 1000),
         loadIndicadoresAcao: function() {
             instance.$emit('loadIndicadores');
         }
     }
 });
-
-
-
 Vue.component('dados-form', {
     template: '#dados-form',
     props: {
@@ -148,8 +267,6 @@ Vue.component('dados-form', {
         return data;
     }
 });
-
-
 // INDISPONIVEL FORM
 Vue.component('indisponivel-form', {
     template: '<div>Funcionalidade indisponível no momento.</div>',
@@ -157,7 +274,6 @@ Vue.component('indisponivel-form', {
         return data;
     }
 });
-
 Vue.component('mensagem-piv', {
     template: '<div class="alert alert-warning small" role="alert">{{texto}}</div>',
     props: {
@@ -172,9 +288,6 @@ Vue.component('mensagem-piv', {
         return data;
     }
 });
-
-
-
 var instance = new Vue({
     el: '#piv',
     data: data,
@@ -182,12 +295,7 @@ var instance = new Vue({
         var self = this;
         self.loadSession();
     },
-
     methods: {
-        castingPorcentagem: function(num) {
-            var _dev = (num * 100);
-            return _dev.toFixed(2);
-        },
         secondsToTime: function(seconds) {
             var hours = Math.floor(seconds / 3600);
             var minutes = Math.floor((seconds % 3600) / 60);
@@ -206,9 +314,7 @@ var instance = new Vue({
         getMeta: function() {
             var self = this;
             _metaPiv = self.vm.piv;
-
             for (i = 0; i < _metaPiv.indicadores.length; i++) {
-                console.log(_metaPiv.indicadores[i].meta);
                 _metaPiv.indicadores[i].realizado = _metaPiv.indicadores[i].meta;
             }
             _metaPiv.op.faltas = 0;
@@ -245,55 +351,41 @@ var instance = new Vue({
         },
         setIndicadores: function(piv) {
             var self = this;
-
             self.vm.piv = piv;
-
             // FCR
-            var _fcr = self.getIndicadorPorNome("FCR", piv.indicadores);
-            console.log(_fcr);
+            var _fcr = new Indicador(self.getIndicadorPorNome("FCR", piv.indicadores));
             if (_fcr) {
-                self.vm.fcr.realizado = self.castingPorcentagem(_fcr.realizado);
-                self.vm.fcr.meta = self.castingPorcentagem(_fcr.meta) + "%";
-                self.vm.fcr.regua = _fcr.regua;
+                self.vm.fcr = _fcr;
             } else {
                 self.vm.fcr.realizado = 0;
                 self.vm.fcr.meta = "Falha ao carregar";
             }
 
             // MONITORIA
-            var _monitoria = self.getIndicadorPorNome("MONITORIA", piv.indicadores);
+            var _monitoria = new Indicador(self.getIndicadorPorNome("MONITORIA", piv.indicadores));
             if (_monitoria) {
-                self.vm.monitoria.realizado = self.castingPorcentagem(_monitoria.realizado);
-                self.vm.monitoria.meta = self.castingPorcentagem(_monitoria.meta);
-                self.vm.monitoria.regua = _monitoria.regua;
+                self.vm.monitoria = _monitoria;
             } else {
                 self.vm.monitoria.realizado = 0;
                 self.vm.monitoria.meta = "Falha ao carregar";
             }
 
             // ADERENCIA
-            var _adr = self.getIndicadorPorNome("ADERENCIA", piv.indicadores);
+            var _adr = new Indicador(self.getIndicadorPorNome("ADERENCIA", piv.indicadores));
             if (_adr) {
-                self.vm.adr.realizado = self.castingPorcentagem(_adr.realizado);
-                self.vm.adr.meta = self.castingPorcentagem(_adr.meta) + "%";
-                self.vm.adr.regua = _adr.regua;
-
+                self.vm.adr = _adr;
             } else {
                 self.vm.adr.realizado = 0;
                 self.vm.adr.meta = "Falha ao carregar";
             }
 
             // TMA
-            var _tma = self.getIndicadorPorNome("TMA", piv.indicadores);
+            var _tma = new Indicador(self.getIndicadorPorNome("TMA", piv.indicadores));
             if (_tma) {
-                self.vm.tma.realizado = self.secondsToTime(_tma.realizado);
-                self.vm.tma.meta = self.secondsToTime(_tma.meta);
-                self.vm.tma.regua = _tma.regua;
-
+                self.vm.tma = _tma;
             } else {
                 self.vm.tma.realizado = "00:00:00";
                 self.vm.tma.meta = "Falha ao carregar";
-
             }
 
 
@@ -318,7 +410,6 @@ var instance = new Vue({
                     if (_piv) {
                         self.setIndicadores(_piv);
                     } else {
-
                         self.currentViewForm = 'celula-form';
                         self.getEquipes();
                     }
@@ -334,17 +425,15 @@ var instance = new Vue({
         getTarget:
                 function() {
                     var self = this;
-
                     var simulator =
                             {"s": {
-                                    "fcr": {realizado: (self.vm.fcr.realizado / 100)},
-                                    "adr": {realizado: (self.vm.adr.realizado / 100)},
-                                    "tma": {realizado: moment.duration(self.vm.tma.realizado, "HH:mm:ss").asSeconds()},
-                                    "monitoria": {realizado: (self.vm.monitoria.realizado / 100)},
+                                    "fcr": {realizado: self.vm.fcr.getRealizado()},
+                                    "adr": {realizado: self.vm.adr.getRealizado()},
+                                    "tma": {realizado: self.vm.tma.getRealizado()},
+                                    "monitoria": {realizado: self.vm.monitoria.getRealizado()},
                                     "faltas": self.vm.faltas,
                                     op: self.vm.piv.op}
                             };
-
                     $.ajax({
                         type: "POST",
                         data: JSON.stringify(simulator),
@@ -363,35 +452,22 @@ var instance = new Vue({
                 }
     }
 });
-
-
-
-
-
 // Events
 instance.$on('loadIndicadores', function() {
     this.loadIndicadores();
 });
-
 instance.$on('getMeta', function() {
-    this.getMeta();
+    instance.getMeta();
 });
-
 instance.$on('setIndicadores', function(ind) {
     this.setIndicadores(ind);
 });
-
 instance.$on('getTarget', function() {
     this.getTarget();
 });
-
 instance.$on('getIndicadorPorNome', function(nome) {
     return this.getIndicadorPorNome(nome, this.vm.piv.indicadores)
 });
-
-
-
-
 $("[data-toggle=popover]").popover({
     html: true,
     content: function() {

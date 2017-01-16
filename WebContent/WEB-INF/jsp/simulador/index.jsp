@@ -87,10 +87,16 @@
                 <th>Atingimento</th>
             </tr>
         </thead>
-        <tbody>
-            <tr v-for="r in regua">
-                <td>{{r.realizado}}</td>
-                <td>{{r.atingimento}}</td>
+        <tbody v-if="indicador != 'TMA'">
+            <tr v-for="r in regua" v-bind:class="{success: (r.atingimento * 100).toFixed(0) == 100}">
+                <td>{{ (r.realizado * 100).toFixed(1) }}<span v-if="indicador != 'MONITORIA'">%</span></td>
+                <td>{{ (r.atingimento * 100).toFixed(0) }}</td>
+            </tr>
+        </tbody>
+        <tbody v-else>
+            <tr v-for="r in regua"  v-bind:class="{success: (r.atingimento * 100).toFixed(0) == 100}">
+                <td>{{ secondsToTime(r.realizado) }}</td>
+                <td>{{ r.atingimento }}</td>
             </tr>
         </tbody>
     </table>
@@ -120,11 +126,11 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="vm.fcr.meta"></tabela-meta>
-                                    <tabela-regua v-bind:regua="vm.fcr.regua"></tabela-regua>
+                                    <tabela-regua indicador="FCR" v-bind:regua="vm.fcr.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input id="fcr" type="number" v-model="vm.fcr.realizado" min="0" @change="getTarget()" max="100" class="form-control" placeholder="FCR" aria-describedby="fcr-addon1">
+                                <input id="fcr" step="0.01" type="number" v-model="vm.fcr.realizado" min="0" @change="getTarget()" max="100" class="form-control" placeholder="FCR" aria-describedby="fcr-addon1">
                                 <span class="input-group-addon" id="fcr-addon1">%</span>
                             </div>
                         </div>
@@ -137,11 +143,11 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="vm.adr.meta"></tabela-meta>
-                                    <tabela-regua v-bind:regua="vm.adr.regua"></tabela-regua>
+                                    <tabela-regua indicador="ADERENCIA" v-bind:regua="vm.adr.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input id="adr" v-model="vm.adr.realizado" type="number"  min="0" @change="getTarget()" max="100" class="form-control" placeholder="Aderência" aria-describedby="adr-addon1">
+                                <input id="adr" step="0.01" v-model="vm.adr.realizado" type="number"  min="0" @change="getTarget()" max="100" class="form-control" placeholder="Aderência" aria-describedby="adr-addon1">
                                 <span class="input-group-addon" id="adr-addon1">%</span>
                             </div>
                         </div>
@@ -154,7 +160,7 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="vm.monitoria.meta"></tabela-meta>
-                                    <tabela-regua v-bind:regua="vm.monitoria.regua"></tabela-regua>
+                                    <tabela-regua  indicador="MONITORIA" v-bind:regua="vm.monitoria.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
@@ -171,7 +177,7 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="vm.tma.meta"></tabela-meta>
-                                    <tabela-regua v-bind:regua="vm.tma.regua"></tabela-regua>
+                                    <tabela-regua  indicador="TMA" v-bind:regua="vm.tma.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
@@ -187,6 +193,30 @@
                             <label for="tma">Faltas</label>
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
+                                <div class="hide conteudoPopOver">
+                                    <table class="table small table-bordered table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Realizado</th>
+                                                <th>Desconto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody >
+                                            <tr>
+                                                <td>1</td>
+                                                <td>30</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>60</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td>200</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </a>
                             <div class="input-group">
                                 <input v-model="vm.faltas" id="faltas" type="number" placeholder="Faltas" class="form-control" @change="getTarget()">
