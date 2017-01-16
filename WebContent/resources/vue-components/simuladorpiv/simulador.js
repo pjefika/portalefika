@@ -243,7 +243,7 @@ Vue.component('celula-form', {
 });
 Vue.component('botoes-acao', {
     props: ['show'],
-    template: '<div class="row"><br>\n\
+    template: '<div><br>\n\
                     <button type="button" v-show="show" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Indicadores</button>\n\
                     <button type="button" v-show="!show" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>\n\
                 </div>',

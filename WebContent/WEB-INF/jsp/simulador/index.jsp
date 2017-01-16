@@ -12,15 +12,16 @@
                     <h1>Simulador PIV</h1>
                 </div>
                 <div v-show="show">
-                    <component v-bind:op="vm.piv.op" v-bind:is="currentViewForm"></component>
+                    <component  v-bind:op="vm.piv.op" v-bind:is="currentViewForm"></component>
                     <simulador-form v-bind:piv="vm.piv"></simulador-form>
                 </div>
                 <div v-show="!show">
-                    <p> </p>
-                    <img class="center-block" src="/simuladorpiv/resources/custom/gif/rolling.gif">
+                    <p>
+                        <img class="center-block" src="/simuladorpiv/resources/custom/gif/rolling.gif">
+                    </p>
                 </div>
             </div>
-        </transition>
+            <!--</transition>-->
     </div>
 </div>
 
@@ -49,7 +50,8 @@
 
 
 <script type="text/html" id="celula-form">
-    <div class="row">
+    <div>
+        <mensagem-piv texto="Indicadores indisponíveis no momento, preencha-os manualmente."></mensagem-piv>
         <label>Selecione a Equipe</label>
         <select class="form-control" v-model="vm.piv.op.equipe" @change="getTarget()">
             <option value="" disabled>Selecione</option>
@@ -105,14 +107,14 @@
 
 <script type="text/html" id="indicadores-form">
 
-    <div class="row" v-show="vm.piv.op.equipe">
+    <div v-show="vm.piv.op.equipe">
 
         <div v-bind:show="currentViewForm == 'dados-form'">
             <botoes-acao v-bind:show="currentViewForm == 'dados-form'"></botoes-acao>
             <hr>
         </div>
 
-        <div class="row">
+        <div>
             <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
 
             <div class="panel panel-default">
