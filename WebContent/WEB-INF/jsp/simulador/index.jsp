@@ -120,8 +120,8 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Indicadores</div>
                 <div class="panel-body">
-                    <div class="col-xs-1"></div>
-                    <div class="col-xs-2">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="fcr">FCR</label>
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
@@ -138,7 +138,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-2">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="adr">Aderência</label>
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
@@ -155,7 +155,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-2">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="monitoria">Monitoria</label>
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
@@ -172,7 +172,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-2">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="tma">TMA</label>
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
@@ -190,7 +190,7 @@
                     </div>
 
 
-                    <div class="col-xs-2">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="tma">Faltas</label>
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
@@ -227,7 +227,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-1"></div>
+                    <div class="col-md-1"></div>
                 </div>
             </div>
 
@@ -237,7 +237,7 @@
 
             <div class="col-xs-4"></div>
 
-            <div class="col-xs-4">
+            <div class="col-md-4">
                 <div class="form-group">
                     <div class="panel panel-default">
                         <div for="tma" class="panel-heading">Target</div>
