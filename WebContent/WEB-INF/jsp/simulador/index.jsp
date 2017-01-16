@@ -27,7 +27,7 @@
 
 <script type="text/html" id="dados-form">
 
-    <div class="row">
+    <div>
         <table class="table small table-bordered table-condensed">
             <tbody>
                 <tr>
