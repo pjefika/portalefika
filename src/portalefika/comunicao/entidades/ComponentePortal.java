@@ -19,6 +19,7 @@ public abstract class ComponentePortal extends Component{
     private Boolean ativo;
 
     public ComponentePortal() {
+        this.ativo = false;
     }
 
     public ComponentePortal(Integer id, String titulo, Boolean ativo) {

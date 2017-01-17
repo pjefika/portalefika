@@ -12,15 +12,15 @@ import javax.persistence.Table;
 @Table(name = "PE_SUBABA")
 public class SubAbaPortal extends ComponentePortal {
 
-    @MapsId
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    
+    @ManyToOne
     private Conteudo conteudo;
 
     @ManyToOne
     private AbaPortal abaPortal;
 
     public SubAbaPortal() {
-        conteudo = new Conteudo();
+//        conteudo = new Conteudo();
     }
 
     public Conteudo getConteudo() {

@@ -44,6 +44,7 @@ public class SubAbaPortalController extends AbstractController {
             saDao.cadastrar(subAbaPortal);
             result.use(Results.json()).from(subAbaPortal).include("conteudo").include("abaPortal").serialize();
         } catch (PersistenciaException e) {
+            e.printStackTrace();
             result.use(Results.json()).from(e).serialize();
         }
     }

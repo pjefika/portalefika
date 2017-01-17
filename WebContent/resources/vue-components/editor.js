@@ -10,6 +10,25 @@ var abaURL = "/comunicacao/aba/";
 var subAbaURL = "/comunicacao/subAba/";
 var conteudoURL = "/comunicacao/conteudo/";
 
+var data = {
+    abas: null,
+    // aba
+    editedAba: null,
+    activedAba: null,
+    deletedAba: null,
+    // subAbas
+    editedSubAba: {},
+    activedSubAba: {},
+    deletedSubAba: null,
+    // conteudo
+    editedConteudo: null,
+    activedConteudo: null,
+    deletedConteudo: null,
+    checkedconteudo: false,
+    conteudos: null
+};
+
+
 var alert = new Vue({
     el: '#valert',
     template: '<div class="alert alert-danger" v-show="ativo" role="alert">\
@@ -40,27 +59,33 @@ var alert = new Vue({
     },
 })
 
+//Componente Nova SubAba
+var  novaSubAba = {
+    props: {
+        subAbaPortal: Object,
+        conteudoes: Array,
+        abaPortal: Object
+    },
+    methods: {
+        criaSubAbaNova: function(){
+            this.subAbaPortal.abaPortal = this.abaPortal;
+            dev.adicionarSubAba(this.subAbaPortal)
+        }
+    },
+    template: '#novaSubAbaForm',
+    data: function(){
+        return data;
+    }
+}
+               
+
 // Instancia
 var dev = new Vue({
     el: '#editor',
-    data: {
-        abas: null,
-        // aba
-        editedAba: null,
-        activedAba: null,
-        deletedAba: null,
-        // subAbas
-        editedSubAba: null,
-        activedSubAba: {conteudo: {id: null}},
-        deletedSubAba: null,
-        // conteudo
-        editedConteudo: null,
-        activedConteudo: null,
-        deletedConteudo: null,
-        checkedconteudo: false,
-        conteudos: null
+    data: data,
+    components: {
+        'nova-subaba': novaSubAba
     },
-    components: {},
     created: function() {
         this.getAbas();
         this.getConteudos();
@@ -72,7 +97,7 @@ var dev = new Vue({
             self.editedAba = null;
             self.deletedAba = null;
             self.editedSubAba = null;
-            self.activedSubAba = {conteudo: {id: null}}
+            self.activedSubAba = {"subAbaPortal": {conteudo: {id: null}}},
             self.deletedSubAba = null;
             self.editedConteudo = null;
             self.activedConteudo = null;
@@ -186,24 +211,25 @@ var dev = new Vue({
             });
         },
         // SubAba
-        novaSubAba: function() {
-            var self = this;
-            
-            var _novaSubAba = {"subAbaPortal": {"titulo": "Nova SubAba",
-                    "ativo": false,
-                    "abaPortal": self.activedAba,
-                    "conteudo": {
-                         "titulo": "Novo Conteudo",
-                         "ativo": false,
-                         "dataCriacao": new Date(),
-                         "categoria": {
-                             "titulo": "Nova Categoria",
-                             "ativo": false
-                         }
-                     }}};
-
-            self.adicionarSubAba(_novaSubAba);
-        },
+//       novaSubAba: function() {
+//            var self = this;
+//            
+//            var _novaSubAba = {"subAbaPortal": {"titulo": "Nova SubAba",
+//                    "ativo": false,
+//                    "abaPortal": self.activedAba,
+//                    "conteudo": {
+//                         "titulo": "Novo Conteudo",
+//                         "ativo": false,
+//                         "dataCriacao": new Date(),
+//                         "categoria": {
+//                             "titulo": "Nova Categoria",
+//                             "ativo": false
+//                         }
+//                     }}};
+//             self.activedSubAba = _novaSubAba;
+//             console.log(self.activedSubAba);
+////            self.adicionarSubAba(_novaSubAba);
+//        },
         editSubAba: function(h) {
             var self = this
             self.editedSubAba = h;
@@ -243,10 +269,13 @@ var dev = new Vue({
         },
         adicionarSubAba: function(h) {
             var self = this;
+            var f = {"subAbaPortal": h};
+            console.log(f);
+            
             $.ajax({
                 type: "POST",
                 url: subAbaURL,
-                data: JSON.stringify(h),
+                data: JSON.stringify(f),
                 dataType: "json",
                 beforeSend: function(xhrObj) {
                     xhrObj.setRequestHeader("Content-Type", "application/json");
@@ -317,7 +346,7 @@ var dev = new Vue({
         },
         novaConteudo: function() {
             var self = this;
-            var _novoConteudo = {"conteudo": {"titulo": "Novo Conte�do", "ativo": false}};
+            var _novoConteudo = {"conteudo": {"titulo": "Novo Conteúdo", "ativo": false}};
             self.adicionarConteudo(_novoConteudo);
         },
         editConteudo: function(h) {

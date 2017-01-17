@@ -90,7 +90,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <button class="btn btn-success btn-xs" @click="novaSubAba">Adicionar</button>
+                    <button class="btn btn-success btn-xs" data-toggle="modal" data-target="#modalNovaSubAba">Adicionar</button>
                     <br>
                 </div>
             </div>
@@ -151,7 +151,7 @@
                             <label>Conteúdo</label>
                             <select class="form-control" v-model="activedSubAba.conteudo.id">
                                 <option v-for="conteudo in conteudos" v-bind:value="conteudo.id">
-                                    {{conteudo.titulo}}
+                                    {{conteudo.categoria.titulo}} - {{conteudo.titulo}}
                                 </option>
                             </select>
                         </div>
@@ -164,5 +164,37 @@
                 </div>
             </div>
         </div>
+        
+        <nova-subaba v-bind:sub-aba-portal="activedSubAba" v-bind:conteudoes="conteudos" v-bind:aba-portal="activedAba"></nova-subaba>
+        <!-- Modal Nova SubAba -->
+        <script type="text/html" id="novaSubAbaForm">
+            <div class="modal fade" id="modalNovaSubAba" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Nova SubAba</h4>
+                        </div>
+                        <div class="modal-body form">                        
+                            <div class="form-group">
+                                <label>Conteúdo</label>
+                                <select class="form-control" v-model="subAbaPortal.conteudo">
+                                    <option v-for="conteudo in conteudoes" v-bind:value="conteudo" v-html="conteudo.categoria.titulo + ' - ' + conteudo.titulo">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Título</label>
+                                <input type="text" class="form-control" v-model="subAbaPortal.titulo">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                            <button type="button" class="btn btn-success" data-dismiss="modal" v-on:click="criaSubAbaNova">Criar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </script>
     </div>
     <script src="${pageContext.request.contextPath}/resources/vue-components/editor.js"></script>
