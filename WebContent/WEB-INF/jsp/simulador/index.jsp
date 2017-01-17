@@ -12,7 +12,9 @@
                     <h1>Simulador PIV</h1>
                 </div>
                 <div v-show="show">
+                    <p>
                     <component  v-bind:op="vm.piv.op" v-bind:is="currentViewForm"></component>
+                    </p>
                     <simulador-form v-bind:piv="vm.piv"></simulador-form>
                 </div>
                 <div v-show="!show">
@@ -122,7 +124,6 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Indicadores</div>
                 <div class="panel-body">
-                    <div class="col-md-1"></div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="fcr">FCR</label>
@@ -229,28 +230,20 @@
                         </div>
                     </div>
 
-                    <div class="col-md-1"></div>
-                </div>
-            </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="fcr">Target</label>
+                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                                <span class="glyphicon glyphicon-info-sign"></span>
+                                <div class="hide conteudoPopOver">
 
-        </div>
-
-        <div class="row center-block">
-
-            <div class="col-xs-4"></div>
-
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="panel panel-default">
-                        <div for="tma" class="panel-heading">Target</div>
-                        <div class="panel-body">
-                            <h2 class="text-center"><span v-text="normalizedTarget"></span>%</h2>
+                                </div>
+                            </a>
+                            <h4 class="text-center"><span v-text="normalizedTarget"></span>%</h4>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-xs-4"></div>
 
         </div>
     </div>

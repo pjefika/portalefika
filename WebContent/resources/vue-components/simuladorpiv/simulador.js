@@ -2,11 +2,15 @@
 
 /* global _, moment, obj, Vue */
 
+
+// DATA SOURCES
 var pivURL = "http://localhost:8080/pivAPI/operador/simulador/";
 var pivURL2 = "http://localhost:8080/pivAPI/operador/simulador/change/";
 var equipeURL = "http://localhost:8080/pivAPI/operador/simulador/equipes/";
 var pivManualURL = "http://localhost:8080/pivAPI/operador/simulador/manual/";
 var sessionURL = "/simuladorpiv/session/";
+
+
 // CLASSES
 var Indicador = function(json) {
     if (json) {
@@ -25,15 +29,14 @@ var Indicador = function(json) {
         this.atingimento = json.atingimento;
         //
         this.peso = json.peso;
-
-        console.log(json.regua)
-
         this.regua = json.regua;
 
     } else {
         this.realizado = 0;
     }
 };
+
+// METHODS
 Indicador.prototype.metaToRealizado = function()
 {
     this.meta = this.realizado;
@@ -47,6 +50,7 @@ Indicador.prototype.getRealizado = function() {
 }
 
 
+// DATA
 var data = {
     equipes: {},
     currentViewForm: 'dados-form',
@@ -128,11 +132,14 @@ Vue.component('simulador-form', {
     props: {
         piv: Object
     },
-    template: '<indicadores-form v-bind:target="piv.target"></indicadores-form>',
+    template: '<div>\n\
+                <indicadores-form v-bind:target="piv.target"></indicadores-form>\n\
+                </div>',
     data: function() {
         return data;
     }
 });
+
 Vue.component('tabela-meta', {
     props: ['meta'],
     template: '#tabela-meta',
@@ -205,9 +212,9 @@ Vue.component('celula-form', {
 });
 Vue.component('botoes-acao', {
     props: ['show'],
-    template: '<div><br>\n\
-                    <button type="button" v-show="show" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Indicadores</button>\n\
-                    <button type="button" v-show="!show" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Carregar Metas</button>\n\
+    template: '<div>\
+                    <button type="button" v-show="show" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Indicadores</button>\n\
+                    <button type="button" v-show="!show" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Metas</button>\n\
                 </div>',
     methods: {
         getMetaAcao: _.debounce(function() {
@@ -355,8 +362,6 @@ var instance = new Vue({
             var _faltas = piv.op.faltas;
             if (_faltas) {
                 self.vm.faltas = _faltas;
-            } else {
-                self.vm.faltas = 0;
             }
 
         },
