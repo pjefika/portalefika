@@ -15,7 +15,7 @@
                     <p>
                     <component  v-bind:op="vm.piv.op" v-bind:is="currentViewForm"></component>
                     </p>
-                    <simulador-form v-bind:piv="vm.piv"></simulador-form>
+                    <simulador-form v-bind:vm="vm"></simulador-form>
                 </div>
                 <div v-show="!show">
                     <p>
@@ -24,8 +24,6 @@
                 </div>
             </div>
         </transition>
-        <h4>Homologação: </h4>
-        {{vm}}
     </div>
 </div>
 
@@ -111,10 +109,9 @@
 
 <script type="text/html" id="indicadores-form">
 
-    <div v-show="vm.piv.op.equipe">
-
+    <div v-show="show">
         <div v-bind:show="currentViewForm == 'dados-form'">
-            <botoes-acao v-bind:show="currentViewForm == 'dados-form'"></botoes-acao>
+            <botoes-acao v-bind:show="showBotoesAcao"></botoes-acao>
             <hr>
         </div>
 
@@ -122,7 +119,7 @@
             <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
 
             <div class="panel panel-default">
-                <div class="panel-heading">Indicadores</div>
+                <div class="panel-heading" v-text="header"></div>
                 <div class="panel-body">
                     <div class="col-md-2">
                         <div class="form-group">
@@ -130,12 +127,12 @@
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="vm.fcr.meta"></tabela-meta>
-                                    <tabela-regua indicador="FCR" v-bind:regua="vm.fcr.regua"></tabela-regua>
+                                    <tabela-meta v-bind:meta="fcr.meta"></tabela-meta>
+                                    <tabela-regua indicador="FCR" v-bind:regua="fcr.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input id="fcr" step="0.01" type="number" v-model="vm.fcr.realizado" min="0" @change="getTarget()" max="100" class="form-control" placeholder="FCR" aria-describedby="fcr-addon1">
+                                <input v-bind:disabled="disabled" id="fcr" step="0.01" type="number" v-model="fcr.realizado" min="0" @change="getTarget()" max="100" class="form-control" placeholder="FCR" aria-describedby="fcr-addon1">
                                 <span class="input-group-addon" id="fcr-addon1">%</span>
                             </div>
                         </div>
@@ -147,12 +144,12 @@
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="vm.adr.meta"></tabela-meta>
-                                    <tabela-regua indicador="ADERENCIA" v-bind:regua="vm.adr.regua"></tabela-regua>
+                                    <tabela-meta v-bind:meta="adr.meta"></tabela-meta>
+                                    <tabela-regua indicador="ADERENCIA" v-bind:regua="adr.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input id="adr" step="0.01" v-model="vm.adr.realizado" type="number"  min="0" @change="getTarget()" max="100" class="form-control" placeholder="Aderência" aria-describedby="adr-addon1">
+                                <input v-bind:disabled="disabled" id="adr" step="0.01" v-model="adr.realizado" type="number"  min="0" @change="getTarget()" max="100" class="form-control" placeholder="Aderência" aria-describedby="adr-addon1">
                                 <span class="input-group-addon" id="adr-addon1">%</span>
                             </div>
                         </div>
@@ -164,12 +161,12 @@
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="vm.monitoria.meta"></tabela-meta>
-                                    <tabela-regua  indicador="MONITORIA" v-bind:regua="vm.monitoria.regua"></tabela-regua>
+                                    <tabela-meta v-bind:meta="monitoria.meta"></tabela-meta>
+                                    <tabela-regua  indicador="MONITORIA" v-bind:regua="monitoria.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input v-model="vm.monitoria.realizado"  id="monitoria" type="number" @change="getTarget()" min="0" max="100" class="form-control" placeholder="Monitoria" aria-describedby="fcr-addon1">
+                                <input v-bind:disabled="disabled"  v-model="monitoria.realizado"  id="monitoria" type="number" @change="getTarget()" min="0" max="100" class="form-control" placeholder="Monitoria" aria-describedby="fcr-addon1">
                                 <span class="input-group-addon" id="monitoria-addon1"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></span>
                             </div>
                         </div>
@@ -181,12 +178,12 @@
                             <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="vm.tma.meta"></tabela-meta>
-                                    <tabela-regua  indicador="TMA" v-bind:regua="vm.tma.regua"></tabela-regua>
+                                    <tabela-meta v-bind:meta="tma.meta"></tabela-meta>
+                                    <tabela-regua  indicador="TMA" v-bind:regua="tma.regua"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input v-model="vm.tma.realizado" id="tma" type="text" placeholder="TMA" class="form-control time" maxlength="8" @change="getTarget()">
+                                <input v-bind:disabled="disabled"  v-model="tma.realizado" id="tma" type="text" placeholder="TMA" class="form-control time" maxlength="8" @change="getTarget()">
                                 <span class="input-group-addon" id="basic-tma"><span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span></span>
                             </div>
                         </div>
@@ -224,7 +221,7 @@
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input v-model="vm.faltas" id="faltas" type="number" placeholder="Faltas" class="form-control" @change="getTarget()">
+                                <input v-bind:disabled="disabled" v-model="faltas" id="faltas" type="number" placeholder="Faltas" class="form-control" @change="getTarget()">
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></span>
                             </div>
                         </div>
