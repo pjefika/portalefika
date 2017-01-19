@@ -16,29 +16,44 @@ var Indicador = function(json) {
         //
         this.nome = json.nome;
 
-        if (json.realizado) {
+        if (json.realizado || json.realizado === 0) {
+
+            // TMA
             if (this.nome !== 'TMA') {
                 this.realizado = Number((json.realizado * 100).toFixed(2));
                 this.meta = json.meta * 100;
-
             } else {
                 this.realizado = secondsToTime(json.realizado);
                 this.meta = secondsToTime(json.meta);
-
             }
 
             this.atingimento = json.atingimento;
             //
             this.peso = json.peso;
-            this.regua = json.regua;
+
+            if (json.regua) {
+                this.regua = json.regua;
+                this.procReguaMeta();
+            }
+
+
 
         } else {
-            this.realizado = 0;
+
+            if (this.nome !== 'TMA') {
+                this.realizado = 0;
+            } else {
+                this.realizado = "00:00:00";
+            }
+
         }
 
     } else {
         this.realizado = 0;
     }
+
+
+
 };
 
 // METHODS
@@ -46,7 +61,22 @@ Indicador.prototype.metaToRealizado = function()
 {
     this.realizado = this.meta;
 };
+Indicador.prototype.procReguaMeta = function()
+{
+    for (var r in this.regua) {
+        if (r.atingimento >= this.atingimento) {
+            r.flagged = true;
+        } else {
+            r.flagged = false;
+        }
+    }
+};
 Indicador.prototype.getRealizado = function() {
+
+    if (!this.realizado) {
+        return 0;
+    }
+
     if (this.nome !== 'TMA') {
         return (this.realizado * 0.01).toFixed(5);
     } else {
@@ -61,12 +91,13 @@ var data = {
     currentViewForm: 'dados-form',
     show: false,
     meta: {
-        fcr: new Indicador(),
-        tma: new Indicador(),
-        monitoria: new Indicador(),
-        adr: new Indicador(),
+        fcr: new Indicador({"nome": "FCR"}),
+        tma: new Indicador({"nome": "TMA"}),
+        monitoria: new Indicador({"nome": "MONITORIA"}),
+        adr: new Indicador({"nome": "ADERENCIA"}),
         faltas: 0,
-        target: 0
+        target: 0,
+        mensagens: []
     },
     simulador: {
         fcr: new Indicador({"nome": "FCR"}),
@@ -74,14 +105,16 @@ var data = {
         monitoria: new Indicador({"nome": "MONITORIA"}),
         adr: new Indicador({"nome": "ADERENCIA"}),
         faltas: 0,
-        target: 0
+        target: 0,
+        mensagens: []
     },
     vm: {
-        fcr: new Indicador(),
-        tma: new Indicador(),
-        monitoria: new Indicador(),
-        adr: new Indicador(),
+        fcr: new Indicador({"nome": "FCR"}),
+        tma: new Indicador({"nome": "TMA"}),
+        monitoria: new Indicador({"nome": "MONITORIA"}),
+        adr: new Indicador({"nome": "ADERENCIA"}),
         faltas: 0,
+        mensagens: [],
         piv: {
             "op": {
                 "loginOperador": "",
@@ -160,11 +193,12 @@ Vue.component('simulador-form', {
         }
     },
     template: '<div v-show="vm.piv.op.equipe">\n\
-                    <indicadores-form header="Meta" show="true" disabled="true" v-bind:fcr="meta.fcr" v-bind:adr="meta.adr"v-bind:monitoria="meta.monitoria" v-bind:tma="meta.tma" v-bind:faltas="meta.faltas" v-bind:target="meta.target"></indicadores-form>\n\
-                    <indicadores-form header="Realizado" disabled="true" v-bind:show="exibir" v-bind:fcr="vm.fcr" v-bind:adr="vm.adr" v-bind:monitoria="vm.monitoria" v-bind:tma="vm.tma" v-bind:faltas="vm.faltas" v-bind:target="vm.piv.target"></indicadores-form>\n\
-                    <indicadores-form header="Simulador" show="true" v-bind:fcr="simulador.fcr" v-bind:adr="simulador.adr" v-bind:monitoria="simulador.monitoria" v-bind:tma="simulador.tma" v-bind:faltas="simulador.faltas" v-bind:target="simulador.target"></indicadores-form>\n\
+                    <indicadores-form header="Meta" show="true" disabled="true" v-bind:fcr="meta.fcr" v-bind:adr="meta.adr" v-bind:monitoria="meta.monitoria" v-bind:tma="meta.tma" v-bind:faltas="meta.faltas" v-bind:target="meta.target"></indicadores-form>\n\
+                    <indicadores-form header="Realizado"  v-bind:mensagens="vm.piv.mensagens" disabled="true" v-bind:show="exibir" v-bind:fcr="vm.fcr" v-bind:adr="vm.adr" v-bind:monitoria="vm.monitoria" v-bind:tma="vm.tma" v-bind:faltas="vm.faltas" v-bind:target="vm.piv.target"></indicadores-form>\n\
+                    <indicadores-form header="Simulador"  v-bind:mensagens="simulador.mensagens" show="true" v-bind:fcr="simulador.fcr" v-bind:adr="simulador.adr" v-bind:monitoria="simulador.monitoria" v-bind:tma="simulador.tma" v-bind:faltas="simulador.faltas" v-bind:target="simulador.target"></indicadores-form>\n\
                 \n\
-                <h4>Homologação: </h4> {{simulador}}</div>',
+                <h4>VM: </h4> {{vm}}\n\
+    <h4>SIMULADOR: </h4> {{simulador}}</div>',
     data: function() {
         return data;
     }
@@ -205,7 +239,10 @@ Vue.component('indicadores-form', {
             }
         },
         fcr: {
-            type: Indicador
+            type: Indicador,
+            default: function() {
+                return 0;
+            },
         },
         adr: {
             type: Indicador
@@ -217,7 +254,13 @@ Vue.component('indicadores-form', {
             type: Indicador
         },
         faltas: {
-            type: String
+            type: Number,
+            default: function() {
+                return 0;
+            }
+        },
+        mensagens: {
+            type: Array
         }
     },
     computed: {
@@ -229,8 +272,12 @@ Vue.component('indicadores-form', {
     },
     methods: {
         getTarget: function() {
-
             var self = this;
+
+            if (!this.faltas) {
+                this.faltas = 0;
+            }
+
             var simulator = {"s": {
                     "fcr": {realizado: this.fcr.getRealizado()},
                     "adr": {realizado: this.adr.getRealizado()},
@@ -253,6 +300,8 @@ Vue.component('indicadores-form', {
                 },
                 success: function(data) {
                     self.simulador.target = data.calculoPivFacade.target;
+                    self.simulador.faltas = self.faltas;
+                    self.simulador.mensagens = data.calculoPivFacade.mensagens;
                 }
             });
 
@@ -271,7 +320,11 @@ Vue.component('tabela-meta', {
     }
 });
 Vue.component('tabela-regua', {
-    props: ['regua', 'indicador', 'atingimento'],
+    props: {
+        indicador: {
+            type: Indicador
+        }
+    },
     template: '#tabela-regua',
     methods: {
         secondsToTime: function(seconds) {
@@ -303,7 +356,7 @@ Vue.component('botoes-acao', {
     template: '<div v-show="show">\
                     <button type="button"  v-show="option" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Indicadores</button>\n\
                     <button type="button"  v-show="!option" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Metas</button>\n\
-                </div>',
+    </div>',
     methods: {
         getMetaAcao: _.debounce(function() {
             instance.$emit('getMeta');
@@ -410,6 +463,9 @@ var instance = new Vue({
             var self = this;
             self.vm.piv = piv;
 
+            // Fixa target da Meta
+            self.meta.target = 0.25;
+
             // FCR
             var _fcr = self.getIndicadorPorNome("FCR", piv.indicadores);
             var _fcrRealizado = new Indicador(_fcr);
@@ -506,36 +562,6 @@ var instance = new Vue({
                 },
                 success: function(data) {
                     self.setIndicadores(data.calculoPivFacade)
-                }
-            });
-        },
-        calculaTarget: function(h) {
-            var self = this;
-
-            var simulator = {"s": {
-                    "fcr": {realizado: h.fcr.getRealizado()},
-                    "adr": {realizado: h.adr.getRealizado()},
-                    "tma": {realizado: h.tma.getRealizado()},
-                    "monitoria": {realizado: h.monitoria.getRealizado()},
-                    "faltas": h.faltas,
-                    op: self.vm.piv.op}
-            };
-
-            $.ajax({
-                type: "POST",
-                data: JSON.stringify(simulator),
-                url: pivURL2,
-                dataType: "json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("Content-Type", "application/json");
-                },
-                error: function() {
-                    self.currentViewForm = 'indisponivel-form';
-                },
-                success: function(data) {
-                    console.log(data);
-                    h.target = data.calculoPivFacade.target;
-                    return h;
                 }
             });
         }

@@ -12,7 +12,7 @@
             <h1>Simulador PIV</h1>
         </div>
 
-        <div class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="mainbox center">
             <c:if test="${not empty mensagemFalha}">
                 <span class="alert alert-danger" role="alert">
                     <label class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></label>

@@ -91,14 +91,14 @@
                 <th>Atingimento</th>
             </tr>
         </thead>
-        <tbody v-if="indicador != 'TMA'">
-            <tr v-for="r in regua" v-bind:class="{success: (r.atingimento * 100).toFixed(0) == 100}">
-                <td>{{ (r.realizado * 100).toFixed(1) }}<span v-if="indicador != 'MONITORIA'">%</span></td>
+        <tbody v-if="indicador.nome != 'TMA'">
+            <tr v-for="r in indicador.regua" v-bind:class="{success: r.flagged}">
+                <td>{{ (r.realizado * 100).toFixed(1) }}<span v-if="indicador.nome != 'MONITORIA'">%</span></td>
                 <td>{{ (r.atingimento * 100).toFixed(0) }}</td>
             </tr>
         </tbody>
         <tbody v-else>
-            <tr v-for="r in regua"  v-bind:class="{success: (r.atingimento * 100).toFixed(0) == 100}">
+            <tr v-for="r in indicador.regua"  v-bind:class="{success: r.flagged}">
                 <td>{{ secondsToTime(r.realizado) }}</td>
                 <td>{{ r.atingimento }}</td>
             </tr>
@@ -116,7 +116,7 @@
         </div>
 
         <div>
-            <mensagem-piv v-for="msg in vm.piv.mensagens" v-bind:texto="msg.texto"></mensagem-piv>
+            <mensagem-piv v-for="msg in mensagens" v-bind:texto="msg.texto"></mensagem-piv>
 
             <div class="panel panel-default">
                 <div class="panel-heading" v-text="header"></div>
@@ -128,7 +128,7 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="fcr.meta"></tabela-meta>
-                                    <tabela-regua indicador="FCR" v-bind:regua="fcr.regua"></tabela-regua>
+                                    <tabela-regua v-bind:indicador="fcr"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
@@ -145,7 +145,7 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="adr.meta"></tabela-meta>
-                                    <tabela-regua indicador="ADERENCIA" v-bind:regua="adr.regua"></tabela-regua>
+                                    <tabela-regua v-bind:indicador="adr"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
@@ -162,11 +162,11 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="monitoria.meta"></tabela-meta>
-                                    <tabela-regua  indicador="MONITORIA" v-bind:regua="monitoria.regua"></tabela-regua>
+                                    <tabela-regua v-bind:indicador="monitoria"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
-                                <input v-bind:disabled="disabled"  v-model="monitoria.realizado"  id="monitoria" type="number" @change="getTarget()" min="0" max="100" class="form-control" placeholder="Monitoria" aria-describedby="fcr-addon1">
+                                <input v-bind:disabled="disabled" step="0.01"  v-model="monitoria.realizado"  id="monitoria" type="number" @change="getTarget()" max="100" class="form-control" placeholder="Monitoria">
                                 <span class="input-group-addon" id="monitoria-addon1"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></span>
                             </div>
                         </div>
@@ -179,7 +179,7 @@
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="tma.meta"></tabela-meta>
-                                    <tabela-regua  indicador="TMA" v-bind:regua="tma.regua"></tabela-regua>
+                                    <tabela-regua v-bind:indicador="tma"></tabela-regua>
                                 </div>
                             </a>
                             <div class="input-group">
