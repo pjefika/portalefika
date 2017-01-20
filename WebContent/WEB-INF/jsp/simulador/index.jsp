@@ -111,8 +111,8 @@
 
     <div v-show="show">
         <div v-bind:show="currentViewForm == 'dados-form'">
-            <botoes-acao v-bind:show="showBotoesAcao"></botoes-acao>
             <hr>
+            <p><botoes-acao v-bind:dados="currentViewForm == 'dados-form'" v-bind:show="showBotoes"></botoes-acao></p>
         </div>
 
         <div>
@@ -124,7 +124,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="fcr">FCR</label>
-                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                            <a v-show="showRegua" data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="fcr.meta"></tabela-meta>
@@ -141,7 +141,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="adr">Aderência</label>
-                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                            <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="adr.meta"></tabela-meta>
@@ -158,7 +158,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="monitoria">Monitoria</label>
-                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                            <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="monitoria.meta"></tabela-meta>
@@ -175,7 +175,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="tma">TMA</label>
-                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                            <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <tabela-meta v-bind:meta="tma.meta"></tabela-meta>
@@ -193,7 +193,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="tma">Faltas</label>
-                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                            <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
                                     <table class="table small table-bordered table-condensed">
@@ -230,7 +230,7 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="fcr">Target</label>
-                            <a data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
+                            <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
 

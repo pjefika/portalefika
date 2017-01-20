@@ -2,6 +2,8 @@
 
 /* global _, moment, obj, Vue */
 
+Vue.config.devtools = true
+Vue.config.silent = true;
 
 // DATA SOURCES
 var pivURL = "http://localhost:8080/pivAPI/operador/simulador/";
@@ -9,11 +11,52 @@ var pivURL2 = "http://localhost:8080/pivAPI/operador/simulador/change/";
 var equipeURL = "http://localhost:8080/pivAPI/operador/simulador/equipes/";
 var sessionURL = "/simuladorpiv/session/";
 
+//
+//var Regua = function(json) {
+//    if (json) {
+//        this.linhas = [];
+//
+//        for (var i in json) {
+//            this.linhas.push(new LinhaRegua(json[i]));
+//        }
+//
+//
+//    }
+//}
+//
+//var LinhaRegua = function(json) {
+//    if (json) {
+//        this.atingimento = json.atingimento;
+//        this.realizado = json.realizado;
+//    }
+//};
+//
+//LinhaRegua.prototype.getRealizadoFormat = function() {
+//
+//    if (this.nome === 'TMA') {
+//        return secondsToTime(this.realizado);
+//    } else {
+//        return (this.realizado * 100).toFixed(1);
+//    }
+//
+//
+//};
+//LinhaRegua.prototype.getAtingimentoFormat = function() {
+//
+//    if (this.nome === 'TMA') {
+//        return (this.atingimento * 100).toFixed(0);
+//    } else {
+//        return this.atingimento + "%";
+//    }
+//
+//};
+
+
 
 // CLASSES
 var Indicador = function(json) {
     if (json) {
-        //
+
         this.nome = json.nome;
 
         if (json.realizado || json.realizado === 0) {
@@ -36,8 +79,6 @@ var Indicador = function(json) {
                 this.procReguaMeta();
             }
 
-
-
         } else {
 
             if (this.nome !== 'TMA') {
@@ -57,22 +98,37 @@ var Indicador = function(json) {
 };
 
 // METHODS
-Indicador.prototype.metaToRealizado = function()
-{
+Indicador.prototype.metaToRealizado = function() {
     this.realizado = this.meta;
+    this.atingimento = 1;
 };
-Indicador.prototype.procReguaMeta = function()
-{
-    for (var r in this.regua) {
-        if (r.atingimento >= this.atingimento) {
-            r.flagged = true;
+Indicador.prototype.procReguaMeta = function() {
+    var _list = this.regua;
+
+    var i = 0;
+
+    for (var r in _list) {
+        if (Number(_list[r].atingimento) === Number(this.atingimento)) {
+            // TRATATIVA PARA NÃO COLORIR MAIS DE UMA LINHA
+            if (this.nome === "TMA") {
+                if (this.getRealizado() > 120) {
+                    i++;
+                }
+                if (i == 2) {
+                    _list[r].flagged = true;
+                }
+
+            } else {
+                _list[r].flagged = true;
+                return;
+            }
+
         } else {
-            r.flagged = false;
+            _list[r].flagged = false;
         }
     }
 };
 Indicador.prototype.getRealizado = function() {
-
     if (!this.realizado) {
         return 0;
     }
@@ -82,7 +138,7 @@ Indicador.prototype.getRealizado = function() {
     } else {
         return moment.duration(this.realizado, "HH:mm:ss").asSeconds();
     }
-}
+};
 
 
 // DATA
@@ -123,45 +179,6 @@ var data = {
                 "equipe": "",
                 "faltas": 0
             },
-            "indicadores":
-                    [
-                        new Indicador({
-                            "realizado": 0.97,
-                            "meta": 0,
-                            "peso": 0,
-                            "atingimento": 2,
-                            "pontos": 0.6,
-                            "nome": "FCR",
-                            "regua": []
-                        }),
-                        new Indicador({
-                            "realizado": 343,
-                            "meta": 360,
-                            "peso": 0.25,
-                            "atingimento": 1,
-                            "pontos": 0.25,
-                            "nome": "TMA",
-                            "regua": []
-                        }),
-                        new Indicador({
-                            "realizado": 0,
-                            "meta": 0.89,
-                            "peso": 0.2,
-                            "atingimento": 0,
-                            "pontos": 0,
-                            "nome": "MONITORIA",
-                            "regua": []
-                        }),
-                        new Indicador({
-                            "realizado": 0.9203007518796992,
-                            "meta": 0.89,
-                            "peso": 0.25,
-                            "atingimento": 2,
-                            "pontos": 0.5,
-                            "nome": "ADERENCIA",
-                            "regua": []
-                        }
-                        )],
             "mensagens": [],
             "pontos": 1.35,
             "pesos": 1,
@@ -170,7 +187,6 @@ var data = {
     }
 };
 
-Vue.config.silent = true;
 
 // FUNCTIONS
 function secondsToTime(seconds) {
@@ -194,11 +210,12 @@ Vue.component('simulador-form', {
     },
     template: '<div v-show="vm.piv.op.equipe">\n\
                     <indicadores-form header="Meta" show="true" disabled="true" v-bind:fcr="meta.fcr" v-bind:adr="meta.adr" v-bind:monitoria="meta.monitoria" v-bind:tma="meta.tma" v-bind:faltas="meta.faltas" v-bind:target="meta.target"></indicadores-form>\n\
-                    <indicadores-form header="Realizado"  v-bind:mensagens="vm.piv.mensagens" disabled="true" v-bind:show="exibir" v-bind:fcr="vm.fcr" v-bind:adr="vm.adr" v-bind:monitoria="vm.monitoria" v-bind:tma="vm.tma" v-bind:faltas="vm.faltas" v-bind:target="vm.piv.target"></indicadores-form>\n\
-                    <indicadores-form header="Simulador"  v-bind:mensagens="simulador.mensagens" show="true" v-bind:fcr="simulador.fcr" v-bind:adr="simulador.adr" v-bind:monitoria="simulador.monitoria" v-bind:tma="simulador.tma" v-bind:faltas="simulador.faltas" v-bind:target="simulador.target"></indicadores-form>\n\
+                    <indicadores-form header="Realizado" show-regua="true"  v-bind:mensagens="vm.piv.mensagens" disabled="true" v-bind:show="exibir" v-bind:fcr="vm.fcr" v-bind:adr="vm.adr" v-bind:monitoria="vm.monitoria" v-bind:tma="vm.tma" v-bind:faltas="vm.faltas" v-bind:target="vm.piv.target"></indicadores-form>\n\
+                    <indicadores-form header="Simulador" show-botoes="true" v-bind:mensagens="simulador.mensagens" show="true" v-bind:fcr="simulador.fcr" v-bind:adr="simulador.adr" v-bind:monitoria="simulador.monitoria" v-bind:tma="simulador.tma" v-bind:faltas="simulador.faltas" v-bind:target="simulador.target"></indicadores-form>\n\
                 \n\
-                <h4>VM: </h4> {{vm}}\n\
-    <h4>SIMULADOR: </h4> {{simulador}}</div>',
+                <!-- <h4>VM: </h4> {{vm}}\n\
+    <h4>SIMULADOR: </h4> {{simulador}}\n\
+    <h4>META: </h4> {{meta}}--></div>',
     data: function() {
         return data;
     }
@@ -211,6 +228,13 @@ Vue.component('indicadores-form', {
                 return "Indicadores";
             }
         },
+        showRegua: {
+            type: Boolean,
+            default: function() {
+                return false;
+            }
+
+        },
         show: {
             type: Boolean,
             default: function() {
@@ -218,7 +242,7 @@ Vue.component('indicadores-form', {
             }
 
         },
-        showBotoesAcao: {
+        showBotoes: {
             type: Boolean,
             default: function() {
                 return false;
@@ -352,20 +376,19 @@ Vue.component('celula-form', {
     }
 });
 Vue.component('botoes-acao', {
-    props: ['show', 'option'],
+    props: ['show', 'option', 'dados'],
     template: '<div v-show="show">\
-                    <button type="button"  v-show="option" class="btn btn-default btn-xs" @click="loadIndicadoresAcao()">\n\<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Indicadores</button>\n\
-                    <button type="button"  v-show="!option" class="btn btn-primary btn-xs" @click="getMetaAcao()"><span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Metas</button>\n\
-    </div>',
+                    <button type="button" v-show="dados" class="btn btn-default btn-xs" @click="getRealizado()">\n\<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Indicadores</button>\n\
+                    <button type="button" class="btn btn-primary btn-xs" @click="getMeta()"><span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span> Carregar Metas</button>\n\
+                </div>',
     methods: {
-        getMetaAcao: _.debounce(function() {
-            instance.$emit('getMeta');
-            instance.$emit('getTarget');
-
+        getMeta: _.debounce(function() {
+            data.simulador = data.meta;
         }, 1000),
-        loadIndicadoresAcao: function() {
-            instance.$emit('loadIndicadores');
-        }
+        getRealizado: _.debounce(function() {
+            data.simulador = data.vm;
+            data.simulador.target = data.vm.piv.target;
+        }, 1000),
     }
 });
 Vue.component('dados-form', {
@@ -414,22 +437,6 @@ var instance = new Vue({
                     (minutes < 10 ? "0" + minutes : minutes) + ":" +
                     (seconds < 10 ? "0" + seconds : seconds);
         },
-        getIndicadorPorNome: function(nome, inds) {
-            for (i = 0; i < inds.length; i++) {
-                if (inds[i].nome === nome) {
-                    return inds[i];
-                }
-            }
-        },
-        getMeta: function() {
-            var self = this;
-            _metaPiv = self.vm.piv;
-            for (i = 0; i < _metaPiv.indicadores.length; i++) {
-                _metaPiv.indicadores[i].realizado = _metaPiv.indicadores[i].meta;
-            }
-            _metaPiv.op.faltas = 0;
-            self.setIndicadores(_metaPiv);
-        },
         loadSession: function() {
             var self = this;
             $.ajax({
@@ -466,45 +473,38 @@ var instance = new Vue({
             // Fixa target da Meta
             self.meta.target = 0.25;
 
-            // FCR
-            var _fcr = self.getIndicadorPorNome("FCR", piv.indicadores);
-            var _fcrRealizado = new Indicador(_fcr);
-            var _fcrMeta = new Indicador(_fcr);
-            _fcrMeta.metaToRealizado();
-            if (_fcr) {
-                self.vm.fcr = _fcrRealizado;
-                self.meta.fcr = _fcrMeta;
-            }
+            var _list = piv.indicadores;
 
-            // MONITORIA
-            var _monitoria = self.getIndicadorPorNome("MONITORIA", piv.indicadores);
-            var _monitoriaRealizado = new Indicador(_monitoria);
-            var _monitoriaMeta = new Indicador(_monitoria);
-            _monitoriaMeta.metaToRealizado();
-            if (_monitoria) {
-                self.vm.monitoria = _monitoriaRealizado;
-                self.meta.monitoria = _monitoriaMeta;
-            }
+            for (var ind in _list) {
 
-            // ADERENCIA
-            var _adr = self.getIndicadorPorNome("ADERENCIA", piv.indicadores);
-            var _adrRealizado = new Indicador(_adr);
-            var _adrMeta = new Indicador(_adr);
-            _adrMeta.metaToRealizado();
-            if (_adr) {
-                self.vm.adr = _adrRealizado;
-                self.meta.adr = _adrMeta;
-            }
-            // TMA
-            var _tma = self.getIndicadorPorNome("TMA", piv.indicadores);
-            var _tmaRealizado = new Indicador(_tma);
-            var _tmaMeta = new Indicador(_tma);
-            _tmaMeta.metaToRealizado();
-            if (_tma) {
-                self.vm.tma = _tmaRealizado;
-                self.meta.tma = _tmaMeta;
-            }
+                var _realizado = new Indicador(_list[ind]);
+                var _meta = new Indicador(_list[ind]);
 
+                _meta.metaToRealizado();
+
+                if (_list[ind]) {
+
+                    if (_list[ind].nome === 'FCR') {
+                        self.vm.fcr = _realizado;
+                        self.meta.fcr = _meta;
+                    }
+
+                    if (_list[ind].nome === 'MONITORIA') {
+                        self.vm.monitoria = _realizado;
+                        self.meta.monitoria = _meta;
+                    }
+
+                    if (_list[ind].nome === 'ADERENCIA') {
+                        self.vm.adr = _realizado;
+                        self.meta.adr = _meta;
+                    }
+
+                    if (_list[ind].nome === 'TMA') {
+                        self.vm.tma = _realizado;
+                        self.meta.tma = _meta;
+                    }
+                }
+            }
 
             // FALTAS
             var _faltas = piv.op.faltas;
@@ -571,9 +571,6 @@ var instance = new Vue({
 // Events
 instance.$on('loadIndicadores', function() {
     this.loadIndicadores();
-});
-instance.$on('getMeta', function() {
-    instance.getMeta();
 });
 instance.$on('setIndicadores', function(ind) {
     this.setIndicadores(ind);
