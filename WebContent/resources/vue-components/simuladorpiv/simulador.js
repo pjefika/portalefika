@@ -162,6 +162,7 @@ function secondsToTime(seconds) {
             (seconds < 10 ? "0" + seconds : seconds);
 }
 
+
 // COMPONENTS
 Vue.component('simulador-form', {
     props: {
@@ -438,7 +439,6 @@ var instance = new Vue({
             self.meta.target = 0.25;
 
             var _list = piv.indicadores;
-
             for (var ind in _list) {
 
                 var _realizado = new Indicador(_list[ind]);
