@@ -71,7 +71,7 @@
         <table class="table small table-bordered table-condensed">
             <thead>
                 <tr>
-                    <th>Meta</th>
+                    <th>{{header}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -127,7 +127,8 @@
                             <a v-show="showRegua" data-placement="bottom" data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="fcr.meta"></tabela-meta>
+                                    <tabela-meta header="Data Atualização" v-bind:meta="fcr.dataAtualizacao"></tabela-meta>
+                                    <tabela-meta header="Meta" v-bind:meta="fcr.meta"></tabela-meta>
                                     <tabela-regua v-bind:indicador="fcr"></tabela-regua>
                                 </div>
                             </a>
@@ -144,7 +145,8 @@
                             <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="adr.meta"></tabela-meta>
+                                    <tabela-meta header="Data Atualização" v-bind:meta="adr.dataAtualizacao"></tabela-meta>
+                                    <tabela-meta header="Meta" v-bind:meta="adr.meta"></tabela-meta>
                                     <tabela-regua v-bind:indicador="adr"></tabela-regua>
                                 </div>
                             </a>
@@ -161,7 +163,7 @@
                             <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="monitoria.meta"></tabela-meta>
+                                    <tabela-meta header="Meta" v-bind:meta="monitoria.meta"></tabela-meta>
                                     <tabela-regua v-bind:indicador="monitoria"></tabela-regua>
                                 </div>
                             </a>
@@ -178,7 +180,8 @@
                             <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-                                    <tabela-meta v-bind:meta="tma.meta"></tabela-meta>
+                                    <tabela-meta header="Data Atualização" v-bind:meta="tma.dataAtualizacao"></tabela-meta>
+                                    <tabela-meta header="Meta" v-bind:meta="tma.meta"></tabela-meta>
                                     <tabela-regua v-bind:indicador="tma"></tabela-regua>
                                 </div>
                             </a>
@@ -233,7 +236,20 @@
                             <a data-placement="bottom" v-show="showRegua"  data-toggle="popover"  data-html="true" title="Informações" data-container="body" type="button">
                                 <span class="glyphicon glyphicon-info-sign"></span>
                                 <div class="hide conteudoPopOver">
-
+                                    <table class="table small table-bordered table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Realizado</th>
+                                                <th>Target</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="t in vm.piv.targets">
+                                                <td>{{ (t.realizado * 100).toFixed(0)}}</td>
+                                                <td>{{(t.atingimento * 100).toFixed(1)}}%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </a>
                             <h4 class="text-center"><span v-text="normalizedTarget"></span>%</h4>

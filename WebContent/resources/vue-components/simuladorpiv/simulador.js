@@ -11,45 +11,7 @@ var pivURL2 = "http://localhost:8080/pivAPI/operador/simulador/change/";
 var equipeURL = "http://localhost:8080/pivAPI/operador/simulador/equipes/";
 var sessionURL = "/simuladorpiv/session/";
 
-//
-//var Regua = function(json) {
-//    if (json) {
-//        this.linhas = [];
-//
-//        for (var i in json) {
-//            this.linhas.push(new LinhaRegua(json[i]));
-//        }
-//
-//
-//    }
-//}
-//
-//var LinhaRegua = function(json) {
-//    if (json) {
-//        this.atingimento = json.atingimento;
-//        this.realizado = json.realizado;
-//    }
-//};
-//
-//LinhaRegua.prototype.getRealizadoFormat = function() {
-//
-//    if (this.nome === 'TMA') {
-//        return secondsToTime(this.realizado);
-//    } else {
-//        return (this.realizado * 100).toFixed(1);
-//    }
-//
-//
-//};
-//LinhaRegua.prototype.getAtingimentoFormat = function() {
-//
-//    if (this.nome === 'TMA') {
-//        return (this.atingimento * 100).toFixed(0);
-//    } else {
-//        return this.atingimento + "%";
-//    }
-//
-//};
+
 
 
 
@@ -73,6 +35,8 @@ var Indicador = function(json) {
             this.atingimento = json.atingimento;
             //
             this.peso = json.peso;
+
+            this.dataAtualizacao = moment(json.dataAtualizacao).format("DD/MM/YYYY");
 
             if (json.regua) {
                 this.regua = json.regua;
@@ -337,7 +301,7 @@ Vue.component('indicadores-form', {
     }
 });
 Vue.component('tabela-meta', {
-    props: ['meta'],
+    props: ['header', 'meta'],
     template: '#tabela-meta',
     data: function() {
         return data;
